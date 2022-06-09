@@ -7,6 +7,7 @@ import com.techelevator.tenmo.model.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
@@ -29,6 +30,11 @@ public class AccountController {
 
         System.out.println("principal name"+ principal.getName());
         return accountRepository.findAccountByUserId(userDao.findIdByUsername(principal.getName()));
+    }
+
+    @GetMapping("/AccountId")
+    public Integer getAccountIdfromUserId(@RequestParam int userId){
+        return accountRepository.findAccountByUserId(userId).getAccountId();
     }
 
 

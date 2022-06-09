@@ -1,11 +1,9 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
-import com.techelevator.tenmo.services.AccountService;
-import com.techelevator.tenmo.services.AuthenticationService;
-import com.techelevator.tenmo.services.ConsoleService;
-import com.techelevator.tenmo.services.UserService;
+import com.techelevator.tenmo.services.*;
 
 public class App {
 
@@ -17,6 +15,7 @@ public class App {
     //Added to handle Account services
     private final AccountService accountService = new AccountService(API_BASE_URL);
     private final UserService userService = new UserService(API_BASE_URL);
+    private final TransferService transferService = new TransferService(API_BASE_URL);
 
     private AuthenticatedUser currentUser;
 
@@ -124,7 +123,7 @@ public class App {
 	private void sendBucks() {
 		// TODO Auto-generated method stub
         // display list of users
-        
+        accountService.setAccount(currentUser);
         userService.getListOfUsers(currentUser);
         System.out.println(userService.getListOfUsersAsString());
 
@@ -133,20 +132,21 @@ public class App {
         //
 
         boolean validSelection = true;
-        int selection =0;
+        int accountSelection =0;
 
 
         do {
-            selection = consoleService.promptForInt(prompt);
+            validSelection=true;
+            accountSelection = consoleService.promptForInt(prompt);
 
             //id isnt their own
-            if(currentUser.getUser().getId().equals(selection)){
+            if(currentUser.getUser().getId().equals((long)(accountSelection))){
                 System.out.println("ID can't be your own");
                 validSelection=false;
             }
 
             //check id exists
-            if(!userService.idExists(selection)){
+            if(!userService.idExists(accountSelection)){
                 System.out.println("ID doesn't exist");
                 validSelection=false;
             }
@@ -154,41 +154,59 @@ public class App {
 
         }while(!validSelection);
 
-        System.out.println("You Selected: "+ selection + " | "+ userService.getUsernameById(selection));
+        System.out.println("You Selected: "+ accountSelection + " | "+ userService.getUsernameById(accountSelection));
 
         prompt="How much TE Bucks would you like to send? ";
 
-
-        validSelection=true;
+        Long amount=0L;
         do{
-            Long amount = consoleService.promptForBigDecimal(prompt).longValue();
+            validSelection=true;
+            amount = consoleService.promptForBigDecimal(prompt).longValue();
 
             if(amount<=0){
                 validSelection=false;
                 System.out.println("Amount cannot be 0 or negative");
             }
 
+            //check for enough funds
             if(!accountService.hasEnoughFunds(amount)){
                 validSelection=false;
                 System.out.println("Insufficient funds");
             }
 
-
-
-
         }while(!validSelection);
 
+        Transfer newTransfer = new Transfer();
+        newTransfer.setTransferId(0);
+        newTransfer.setTransferStatusId(1); //pending = 1 //approved=2 //rejected =3
+        newTransfer.setAmount(amount);
+        newTransfer.setTransferTypeId(2); //1=request 2= send
 
-        //check for enough funds
+
+
+        //TODO FIX ERROR: ACCOUNTS BEING PASSED ARE USER IDS AND NOT ACCOUNT IDS
+
+        int fromAccount = accountService.findAccountIdFromUserId(Math.toIntExact(currentUser.getUser().getId()),currentUser);
+        int toAccount= accountService.findAccountIdFromUserId(accountSelection, currentUser);
+      newTransfer.setAccountFrom(fromAccount);
+      newTransfer.setAccountTo(toAccount);
+
+        Transfer returnedTransfer=transferService.postTransfer(currentUser,newTransfer);
+        System.out.println(returnedTransfer.getTransferId());
+        System.out.println(returnedTransfer.toString());
+
+
+
+
+
 
         //check that money went through
-
+        viewCurrentBalance();
 
 
 
 		
 	}
-
 	private void requestBucks() {
 		// TODO Auto-generated method stub
 		

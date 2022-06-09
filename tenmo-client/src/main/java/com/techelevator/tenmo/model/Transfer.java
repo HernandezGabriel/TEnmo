@@ -4,6 +4,7 @@ public class Transfer {
 
     int transferId;
     int transferStatusId;
+    int transferTypeId;
     int accountFrom;
     int accountTo;
     long amount;
@@ -51,14 +52,12 @@ public class Transfer {
         this.amount = amount;
     }
 
-    public Transfer(int transferId, int transferStatusId, int accountFrom, int accountTo, long amount) {
+    public int getTransferTypeId() {
+        return transferTypeId;
+    }
 
-
-        this.transferId = transferId;
-        this.transferStatusId = transferStatusId;
-        this.accountFrom = accountFrom;
-        this.accountTo = accountTo;
-        this.amount = amount;
+    public void setTransferTypeId(int transferTypeId) {
+        this.transferTypeId = transferTypeId;
     }
 
     @Override
@@ -66,9 +65,22 @@ public class Transfer {
         return "Transfer{" +
                 "transferId=" + transferId +
                 ", transferStatusId=" + transferStatusId +
+                ", transferTypeId=" + transferTypeId +
                 ", accountFrom=" + accountFrom +
                 ", accountTo=" + accountTo +
                 ", amount=" + amount +
                 '}';
     }
+
+    public Transfer(int transferId, int transferStatusId, int transferTypeId, int accountFrom, int accountTo, long amount) {
+        this.transferId = transferId;
+        this.transferStatusId = transferStatusId;
+        this.transferTypeId = transferTypeId;
+        this.accountFrom = accountFrom;
+        this.accountTo = accountTo;
+        this.amount = amount;
+    }
 }
+
+
+

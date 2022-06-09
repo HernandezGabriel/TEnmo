@@ -4,23 +4,23 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Transfer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotEmpty
+    @NotNull
     int transferId;
-    @NotEmpty
+    @NotNull
     int transferTypeId;
-    @NotEmpty
+    @NotNull
     int transferStatusId;
-    @NotEmpty
+    @NotNull
     int accountFrom;
-    @NotEmpty
+    @NotNull
     int accountTo;
-    @NotEmpty
+    @NotNull
     long amount;
 
     public Transfer() {

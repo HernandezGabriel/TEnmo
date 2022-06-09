@@ -4,20 +4,20 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Account {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @NotEmpty(message = "AccountId Cannot be empty")
+    @NotNull(message = "AccountId Cannot be empty")
     int accountId;
 
-    @NotEmpty
+    @NotNull
     int userId;
 
-    @NotEmpty(message = "balance cannot be negative or empty")
+    @NotNull(message = "balance cannot be negative or empty")
     long balance;
 
     public Account() {

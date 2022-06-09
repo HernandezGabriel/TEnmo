@@ -68,7 +68,7 @@ public class UserService {
 
     public boolean idExists(int id){
         for(User u: usersList){
-            if(u.getId().equals(id)){
+            if(u.getId().equals(((long) id))){
                 return true;
             }
         }
@@ -77,9 +77,12 @@ public class UserService {
 
     public String getUsernameById(int id){
         for(User u : usersList){
-            if(u.getId().equals(id){
+            if(u.getId().equals(id)){
                 return u.getUsername();
             }
         }
+
+        return "";
+
     }
 }
