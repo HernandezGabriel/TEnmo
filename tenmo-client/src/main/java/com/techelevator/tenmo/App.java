@@ -5,6 +5,7 @@ import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
+import com.techelevator.tenmo.services.UserService;
 
 public class App {
 
@@ -13,8 +14,9 @@ public class App {
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
 
-    //Added to handle Account methods
+    //Added to handle Account services
     private final AccountService accountService = new AccountService(API_BASE_URL);
+    private final UserService userService = new UserService(API_BASE_URL);
 
     private AuthenticatedUser currentUser;
 
@@ -106,10 +108,6 @@ public class App {
         // SOUT
         System.out.println("Your Current Balance is : " + accountService.getBalance());
 
-
-
-
-
 		
 	}
 
@@ -125,6 +123,69 @@ public class App {
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
+        // display list of users
+        
+        userService.getListOfUsers(currentUser);
+        System.out.println(userService.getListOfUsersAsString());
+
+        String prompt = "Please enter a user ID from the list above: ";
+
+        //
+
+        boolean validSelection = true;
+        int selection =0;
+
+
+        do {
+            selection = consoleService.promptForInt(prompt);
+
+            //id isnt their own
+            if(currentUser.getUser().getId().equals(selection)){
+                System.out.println("ID can't be your own");
+                validSelection=false;
+            }
+
+            //check id exists
+            if(!userService.idExists(selection)){
+                System.out.println("ID doesn't exist");
+                validSelection=false;
+            }
+
+
+        }while(!validSelection);
+
+        System.out.println("You Selected: "+ selection + " | "+ userService.getUsernameById(selection));
+
+        prompt="How much TE Bucks would you like to send? ";
+
+
+        validSelection=true;
+        do{
+            Long amount = consoleService.promptForBigDecimal(prompt).longValue();
+
+            if(amount<=0){
+                validSelection=false;
+                System.out.println("Amount cannot be 0 or negative");
+            }
+
+            if(!accountService.hasEnoughFunds(amount)){
+                validSelection=false;
+                System.out.println("Insufficient funds");
+            }
+
+
+
+
+        }while(!validSelection);
+
+
+        //check for enough funds
+
+        //check that money went through
+
+
+
+
 		
 	}
 
@@ -132,5 +193,9 @@ public class App {
 		// TODO Auto-generated method stub
 		
 	}
+
+    
+
+
 
 }

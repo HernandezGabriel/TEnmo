@@ -1,32 +1,45 @@
 package com.techelevator.tenmo.model;
 
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
+
+@Entity
 public class TransferStatus {
 
-    int TransferStatusId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotEmpty
+    int transferStatusId;
+
+    @NotEmpty
     String transferStatusDesc;
 
     public TransferStatus() {
     }
 
     public TransferStatus(int transferStatusId, String transferStatusDesc) {
-        TransferStatusId = transferStatusId;
+        this.transferStatusId = transferStatusId;
         this.transferStatusDesc = transferStatusDesc;
     }
 
     @Override
     public String toString() {
         return "TransferStatus{" +
-                "TransferStatusId=" + TransferStatusId +
+                "TransferStatusId=" + transferStatusId +
                 ", transferStatusDesc='" + transferStatusDesc + '\'' +
                 '}';
     }
 
     public int getTransferStatusId() {
-        return TransferStatusId;
+        return transferStatusId;
     }
 
     public void setTransferStatusId(int transferStatusId) {
-        TransferStatusId = transferStatusId;
+        this.transferStatusId = transferStatusId;
     }
 
     public String getTransferStatusDesc() {

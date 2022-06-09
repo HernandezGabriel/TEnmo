@@ -1,11 +1,26 @@
 package com.techelevator.tenmo.model;
 
-public class Transfer {
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
 
+@Entity
+public class Transfer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotEmpty
     int transferId;
+    @NotEmpty
+    int transferTypeId;
+    @NotEmpty
     int transferStatusId;
+    @NotEmpty
     int accountFrom;
+    @NotEmpty
     int accountTo;
+    @NotEmpty
     long amount;
 
     public Transfer() {
@@ -51,10 +66,17 @@ public class Transfer {
         this.amount = amount;
     }
 
-    public Transfer(int transferId, int transferStatusId, int accountFrom, int accountTo, long amount) {
+    public int getTransferTypeId() {
+        return transferTypeId;
+    }
 
+    public void setTransferTypeId(int transferTypeId) {
+        this.transferTypeId = transferTypeId;
+    }
 
+    public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, long amount) {
         this.transferId = transferId;
+        this.transferTypeId = transferTypeId;
         this.transferStatusId = transferStatusId;
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;
@@ -65,6 +87,7 @@ public class Transfer {
     public String toString() {
         return "Transfer{" +
                 "transferId=" + transferId +
+                ", transferTypeId=" + transferTypeId +
                 ", transferStatusId=" + transferStatusId +
                 ", accountFrom=" + accountFrom +
                 ", accountTo=" + accountTo +

@@ -10,7 +10,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 //
 //    Account findByAccountId(int accountId);
 
-    Account findIdByUserId(int userId);
+    Account findAccountByUserId(int userId);
 
 //    boolean createAccount(int userId);
 //

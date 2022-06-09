@@ -23,10 +23,11 @@ public class AccountService {
         this.baseUrl = baseUrl;
     }
 
-    public void setAccount(AuthenticatedUser user){
-      //  HttpEntity<AuthenticatedUser> entity = createAuthenticatedUserEntity(user);
 
-      //added these 3 lines
+
+    public void setAccount(AuthenticatedUser user){
+
+        //Sets user's token in a http entity
        HttpHeaders headers = new HttpHeaders();
        headers.setBearerAuth(user.getToken());
        HttpEntity<Void> entity = new HttpEntity<>(headers);
@@ -34,9 +35,11 @@ public class AccountService {
 
         boolean success=false;
         try{
+            //GET request
             ResponseEntity<Account> response =
                     restTemplate.exchange(baseUrl+"MyAccount", HttpMethod.GET, entity, Account.class );
 
+            //sets account to response
             this.account=response.getBody();
             success=true;
 
@@ -45,14 +48,11 @@ public class AccountService {
         }
     }
 
+
+    //after setAccount()
     public long getBalance(){
         return account.getBalance();
 
     }
 
-//    private HttpEntity<AuthenticatedUser> createAuthenticatedUserEntity(AuthenticatedUser user) {
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        return new HttpEntity<>(user, headers);
-//    }
 }
