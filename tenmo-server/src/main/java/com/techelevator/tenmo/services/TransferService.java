@@ -8,36 +8,33 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class TransferService {
 
-//    @Autowired
-//    private AccountRepository accountRepository;
-
     private final AccountRepository accountRepository;
 
     public TransferService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
 
-    @Transactional
-    public void transferMoney(int idSender,
-                              int idReceiver,
+    @Transactional //in the event of error, it should roll back all changes made
+    public boolean transferMoney(int accountIdSender,
+                              int accountIdReceiver,
                               long amount) {
 
-        //note being passed user id's not account id's
+        try{
+            Account sender = accountRepository.findAccountByAccountId(accountIdSender);
+            Account receiver = accountRepository.findAccountByAccountId(accountIdReceiver);
 
-        Account sender =
-                accountRepository.findAccountByAccountId(idSender);
-        Account receiver =
-                accountRepository.findAccountByAccountId(idReceiver);
+            long senderNewAmount = sender.getBalance() - (amount);
+            long receiverNewAmount = receiver.getBalance() + (amount);
 
-        long senderNewAmount =
-                sender.getBalance() - (amount);
-        long receiverNewAmount =
-                receiver.getBalance() + (amount);
+            accountRepository.changeAmount( senderNewAmount,accountIdSender);
+            accountRepository.changeAmount( receiverNewAmount, accountIdReceiver);
 
-        accountRepository
-                .changeAmount( senderNewAmount,idSender);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
 
-        accountRepository
-                .changeAmount( receiverNewAmount, idReceiver);
+        return true;
+
     }
 }

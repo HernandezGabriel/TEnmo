@@ -23,6 +23,18 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
+    public String findUsernameById(int id) {
+        String sql = "SELECT username FROM tenmo_user WHERE user_id = ? ;";
+        String name = jdbcTemplate.queryForObject(sql, String.class, id);
+        if(name==null){
+            return "";
+        }else{
+            return name;
+        }
+    }
+
+
+    @Override
     public int findIdByUsername(String username) {
         String sql = "SELECT user_id FROM tenmo_user WHERE username ILIKE ?;";
         Integer id = jdbcTemplate.queryForObject(sql, Integer.class, username);
@@ -33,6 +45,7 @@ public class JdbcUserDao implements UserDao {
         }
     }
 
+    //added to avoid displaying password hash
     @Override
     public List<User> findUserIdAndUsername(){
         List<User> users = new ArrayList<>();
@@ -44,7 +57,6 @@ public class JdbcUserDao implements UserDao {
         }
         return users;
     }
-
 
 
     @Override

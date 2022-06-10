@@ -15,7 +15,7 @@ public class App {
     //Added to handle Account services
     private final AccountService accountService = new AccountService(API_BASE_URL);
     private final UserService userService = new UserService(API_BASE_URL);
-    private final TransferService transferService = new TransferService(API_BASE_URL);
+    private final TransferService transferService = new TransferService(API_BASE_URL, accountService, userService);
 
     private AuthenticatedUser currentUser;
 
@@ -90,29 +90,13 @@ public class App {
     }
 
 	private void viewCurrentBalance() {
-		// TODO Auto-generated method stub
-
-        //check for current user;
-
-        if(currentUser==null){
-            System.out.println("Current User Cannot Be Null");
-            return ;
-        }
-
-        //Set account in account service
-
-        accountService.setAccount(currentUser);
-        //accountService.getBalance();
-
-        // SOUT
-        System.out.println("Your Current Balance is : " + accountService.getBalance());
-
-		
+        System.out.println("Your Current Balance is : " + accountService.getBalance(currentUser));
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
-		
+        System.out.println(transferService.getMyTransferHistoryAsFormattedString(currentUser));
+
+        //TODO implement more details view
 	}
 
 	private void viewPendingRequests() {
@@ -120,94 +104,80 @@ public class App {
 		
 	}
 
-	private void sendBucks() {
-		// TODO Auto-generated method stub
-        // display list of users
-        accountService.setAccount(currentUser);
-        userService.getListOfUsers(currentUser);
-        System.out.println(userService.getListOfUsersAsString());
-
-        String prompt = "Please enter a user ID from the list above: ";
-
-        //
-
-        boolean validSelection = true;
+    private int getValidUserId(){
+        //set to false if selection invalid
+        boolean validSelection;
         int accountSelection =0;
-
-
         do {
-            validSelection=true;
-            accountSelection = consoleService.promptForInt(prompt);
-
+            validSelection=true; //t by default
+            accountSelection = consoleService.promptForInt("Please enter a user ID from the list above: ");
             //id isnt their own
             if(currentUser.getUser().getId().equals((long)(accountSelection))){
                 System.out.println("ID can't be your own");
                 validSelection=false;
             }
-
             //check id exists
             if(!userService.idExists(accountSelection)){
                 System.out.println("ID doesn't exist");
                 validSelection=false;
             }
-
-
         }while(!validSelection);
-
         System.out.println("You Selected: "+ accountSelection + " | "+ userService.getUsernameById(accountSelection));
+        return accountSelection;
+    } //checks id isn't users own and id exists
 
-        prompt="How much TE Bucks would you like to send? ";
-
-        Long amount=0L;
+    private long getValidAmount(){
+        boolean validSelection;
+        long amount=0L;
         do{
             validSelection=true;
-            amount = consoleService.promptForBigDecimal(prompt).longValue();
-
+            amount = consoleService.promptForLong("How much TE Bucks would you like to send? ");
             if(amount<=0){
                 validSelection=false;
                 System.out.println("Amount cannot be 0 or negative");
             }
-
             //check for enough funds
-            if(!accountService.hasEnoughFunds(amount)){
+            if(!accountService.hasEnoughFunds(amount, currentUser)){
                 validSelection=false;
                 System.out.println("Insufficient funds");
             }
 
         }while(!validSelection);
 
-        Transfer newTransfer = new Transfer();
-        newTransfer.setTransferId(0);
-        newTransfer.setTransferStatusId(1); //pending = 1 //approved=2 //rejected =3
-        newTransfer.setAmount(amount);
-        newTransfer.setTransferTypeId(2); //1=request 2= send
+        return amount;
+    } //checks amount is greater than 0 and sufficient funds
 
-
-
-        //TODO FIX ERROR: ACCOUNTS BEING PASSED ARE USER IDS AND NOT ACCOUNT IDS
-
+	private void sendBucks() {
+        // display list of users
+        System.out.println(userService.getListOfUsersAsString(currentUser));
+        //creating valid transfer
+        int selectedUserId = getValidUserId();
+        long selectedAmount = getValidAmount();
+        //getting account id's from user id's
         int fromAccount = accountService.findAccountIdFromUserId(Math.toIntExact(currentUser.getUser().getId()),currentUser);
-        int toAccount= accountService.findAccountIdFromUserId(accountSelection, currentUser);
-      newTransfer.setAccountFrom(fromAccount);
-      newTransfer.setAccountTo(toAccount);
+        int toAccount= accountService.findAccountIdFromUserId(selectedUserId, currentUser);
 
+//        Transfer newTransfer= new Transfer();
+//        newTransfer.setTransferId(0);
+//        newTransfer.setTransferStatusId(1); //pending = 1 //approved=2 //rejected =3
+//        newTransfer.setTransferTypeId(2); //1=request 2= send
+//        newTransfer.setAmount(selectedAmount);
+//        newTransfer.setAccountFrom(fromAccount);
+//        newTransfer.setAccountTo(toAccount);
+
+        //create transfer
+        Transfer newTransfer = new Transfer(0,1,2,fromAccount,toAccount,selectedAmount);
+        //post transfer!
         Transfer returnedTransfer=transferService.postTransfer(currentUser,newTransfer);
         System.out.println(returnedTransfer.getTransferId());
         System.out.println(returnedTransfer.toString());
+        //returned transfer should be approved and have a new id
 
-
-
-
-
-
-        //check that money went through
         viewCurrentBalance();
 
-
-
-		
 	}
-	private void requestBucks() {
+
+    private void requestBucks() {
 		// TODO Auto-generated method stub
 		
 	}

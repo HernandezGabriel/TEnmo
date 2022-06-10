@@ -25,9 +25,7 @@ public class UserService {
     }
 
 
-    public List<User> getListOfUsers(AuthenticatedUser user){
-
-        //List<User> list = new ArrayList();
+    private void setListOfUsers(AuthenticatedUser user){
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(user.getToken());
@@ -48,12 +46,11 @@ public class UserService {
             BasicLogger.log(e.getMessage());
         }
 
-        return usersList;
-
-
     }
 
-    public String getListOfUsersAsString(){
+    public String getListOfUsersAsString(AuthenticatedUser user){
+        //getting the most updated list of users
+        setListOfUsers(user);
 
         StringBuilder sb = new StringBuilder();
         sb.append("ID | Username \n");

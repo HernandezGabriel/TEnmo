@@ -6,6 +6,8 @@ import com.techelevator.tenmo.model.UserCredentials;
 import java.math.BigDecimal;
 import java.util.Scanner;
 
+import static java.lang.Long.parseLong;
+
 public class ConsoleService {
 
     private final Scanner scanner = new Scanner(System.in);
@@ -78,6 +80,17 @@ public class ConsoleService {
             }
         }
     }
+    public Long promptForLong(String prompt) {
+        System.out.print(prompt);
+        while (true) {
+            try {
+                return parseLong(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid whole number.");
+            }
+        }
+    }
+
 
     public void pause() {
         System.out.println("\nPress Enter to continue...");

@@ -7,8 +7,10 @@ import java.util.List;
 
 public interface TransferRepository extends JpaRepository<Transfer, Integer> {
 
-      List<Transfer> findAll();
+      List<Transfer> findAllByAccountFrom(int accountFrom);
+      List<Transfer> findAllByAccountTo(int accountTo);
       Transfer save(Transfer t);
+
 //    TransferRepository getByTransferId(int id);
 //    boolean createTransfer(TransferRepository newTransfer);
 //    boolean updateTransferStatus(int id, TransferStatus ts);
