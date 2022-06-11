@@ -12,7 +12,7 @@ public class App {
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
 
-    //Added to handle Account services
+    //Added
     private final AccountService accountService = new AccountService(API_BASE_URL);
     private final UserService userService = new UserService(API_BASE_URL);
     private final TransferService transferService = new TransferService(API_BASE_URL, accountService, userService);
@@ -47,13 +47,19 @@ public class App {
         }
     }
 
+    //modified with try catch
     private void handleRegister() {
-        System.out.println("Please register a new user account");
-        UserCredentials credentials = consoleService.promptForCredentials();
-        if (authenticationService.register(credentials)) {
-            System.out.println("Registration successful. You can now login.");
-        } else {
-            consoleService.printErrorMessage();
+        try{
+            System.out.println("Please register a new user account");
+            UserCredentials credentials = consoleService.promptForCredentials();
+            if (authenticationService.register(credentials)) {
+                System.out.println("Registration successful. You can now login.");
+            } else {
+                consoleService.printErrorMessage();
+            }
+        }catch (Exception e){
+            System.out.println("ERROR: Account not created");
+            handleRegister();
         }
     }
 
@@ -104,6 +110,7 @@ public class App {
 		
 	}
 
+    //checks id isn't users own and id exists for send bucks
     private int getValidUserId(){
         //set to false if selection invalid
         boolean validSelection;
@@ -124,8 +131,8 @@ public class App {
         }while(!validSelection);
         System.out.println("You Selected: "+ accountSelection + " | "+ userService.getUsernameById(accountSelection));
         return accountSelection;
-    } //checks id isn't users own and id exists
-
+    }
+    //checks amount is greater than 0 and sufficient funds
     private long getValidAmount(){
         boolean validSelection;
         long amount=0L;
@@ -141,13 +148,13 @@ public class App {
                 validSelection=false;
                 System.out.println("Insufficient funds");
             }
-
         }while(!validSelection);
 
         return amount;
-    } //checks amount is greater than 0 and sufficient funds
+    }
 
 	private void sendBucks() {
+
         // display list of users
         System.out.println(userService.getListOfUsersAsString(currentUser));
         //creating valid transfer
@@ -156,25 +163,16 @@ public class App {
         //getting account id's from user id's
         int fromAccount = accountService.findAccountIdFromUserId(Math.toIntExact(currentUser.getUser().getId()),currentUser);
         int toAccount= accountService.findAccountIdFromUserId(selectedUserId, currentUser);
-
-//        Transfer newTransfer= new Transfer();
-//        newTransfer.setTransferId(0);
-//        newTransfer.setTransferStatusId(1); //pending = 1 //approved=2 //rejected =3
-//        newTransfer.setTransferTypeId(2); //1=request 2= send
-//        newTransfer.setAmount(selectedAmount);
-//        newTransfer.setAccountFrom(fromAccount);
-//        newTransfer.setAccountTo(toAccount);
-
         //create transfer
         Transfer newTransfer = new Transfer(0,1,2,fromAccount,toAccount,selectedAmount);
         //post transfer!
         Transfer returnedTransfer=transferService.postTransfer(currentUser,newTransfer);
+
         System.out.println(returnedTransfer.getTransferId());
         System.out.println(returnedTransfer.toString());
         //returned transfer should be approved and have a new id
 
         viewCurrentBalance();
-
 	}
 
     private void requestBucks() {

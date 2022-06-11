@@ -59,7 +59,7 @@ public class TransferController {
         int userId= userDao.findIdByUsername(principal.getName());
         //get accountId from userID
         int accountId = accountRepository.findAccountByUserId(userId).getAccountId();
-        //add 2 lists together
+        //add 2 lists together (findAllByAccountFrom)(findAllByAccountTo)
         List<Transfer> myTransfersList = transferRepository.findAllByAccountFrom(accountId);
         myTransfersList.addAll(transferRepository.findAllByAccountTo(accountId));
 

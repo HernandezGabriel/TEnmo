@@ -54,6 +54,9 @@ public class AccountController {
         List<User> list = userDao.findUserIdAndUsername();
         Map<Long,String > map= new HashMap<>();
 
+
+        //worried because it's accessing the db in a for loop.
+        // I believe this could be avoided using annotations
         for(Account a: listOfAccounts){
             map.put((long) a.getAccountId(),getUsernameFromAccountId(a.getAccountId()));
         }
