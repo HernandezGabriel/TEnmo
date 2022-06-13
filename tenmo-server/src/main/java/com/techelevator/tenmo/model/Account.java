@@ -2,6 +2,7 @@ package com.techelevator.tenmo.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 public class Account {
@@ -70,5 +71,20 @@ public class Account {
                 ", user=" + user +
                 ", balance=" + balance +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account otherAccount = (Account) o;
+        return getAccountId() == otherAccount.getAccountId()
+                && getUser().getUserId() == otherAccount.getUser().getUserId();
+               // && getUser().getUsername() == otherAccount.getUser().getUsername();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getAccountId(), getUser());
     }
 }

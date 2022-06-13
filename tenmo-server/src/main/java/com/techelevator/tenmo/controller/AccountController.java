@@ -5,6 +5,8 @@ import com.techelevator.tenmo.dao.AccountRepository;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,77 +28,43 @@ public class AccountController {
     private UserDao userDao;
 
     @GetMapping("/MyAccount")
-    public Account getAccount(Principal principal){
-        return accountRepository.findAccountByUsername(principal.getName());
+    public ResponseEntity<Account> getAccount(Principal principal){
+        try {
+            Account myAccount = accountRepository.findAccountByUsername(principal.getName());
+            if(myAccount.equals(null)){
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(myAccount,HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     @GetMapping("/MyBalance")
-    public long getMyBalance(Principal principal){
-        return accountRepository.findAccountByUsername(principal.getName()).getBalance();
+    public ResponseEntity<Long> getMyBalance(Principal principal){
+        try {
+            Long balance = accountRepository.findAccountByUsername(principal.getName()).getBalance();
+            if(balance.equals(null)){
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(balance,HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+//        return accountRepository.findAccountByUsername(principal.getName()).getBalance();
 
     }
-    @GetMapping("/Account-userId")  //"/AccountId?userId=1002
-    public Account getAccountFromUserId(@RequestParam int userId){
-        return accountRepository.findAccountByUserId(userId);
+    @GetMapping("/Account")  //"/AccountId?userId=1002
+    public ResponseEntity<Account> getAccountFromUserId(@RequestParam int userId){
+        try {
+            Account account = accountRepository.findAccountByUserId(userId);
+            if(account.equals(null)){
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(account,HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+//        return accountRepository.findAccountByUserId(userId);
     }
-
-//    @GetMapping("/Account-accountId")  //"/AccountId?accountId=1002
-//    public Account getAccountFromAccountId(@RequestParam int accountId){
-//        // Account returnedAccount = accountRepository.findAccountByUserId(userId);
-//        return accountRepository.findAccountByAccountId(accountId);
-////        return returnedAccount.getAccountId();
-//    }
-
-
-//    //could be more secure with joins/annotations??
-//    @GetMapping("/Username") // Username?accountId=?
-//    public String getUsernameFromAccountId(@RequestParam int accountId){
-////        int userId=accountRepository.findAccountByAccountId(accountId).getUserId();
-//        int userId= (int) accountRepository.findUserIdByAccountId(accountId);
-//        return userDao.findUsernameByUserId(userId);
-//    }
-//
-//    @GetMapping("/AccountIdsAndUsernames")
-//    public Map<Integer, String> getAccountIdsAndUsernames(){
-//       // List<Account> listOfAccounts = accountRepository.findAll();
-//        //List<User> listOfUsers = userDao.findUserIdAndUsername();
-//
-//        List<Object[]> list = accountRepository.findAccountIdAndUsername();
-//        Map<Integer,String > map = new HashMap<>();
-//
-//        for(Object[] ob:list){
-//            map.put((Integer) ob[0], (String) ob[1]);
-//            System.out.println(ob[0]);
-//            System.out.println(ob[1]);
-//
-//        }
-////        map=accountRepository.findAccountIdAndUsername();
-//
-//        //System.out.println(map.toString());
-//
-//        //worried because it's accessing the db in a for loop.
-//        // I believe this could be avoided using annotations
-////        for(Account a: listOfAccounts){
-////            map.put((long) a.getAccountId(),getUsernameFromAccountId(a.getAccountId()));
-////        }
-//        return map;
-//    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

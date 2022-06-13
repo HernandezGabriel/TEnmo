@@ -40,7 +40,8 @@ public class TransferService {
 
                 success=true;
             }else{
-                throw new ResourceAccessException("Error: Transfer not returned");
+                System.out.println("SUCCESS = false");
+                System.out.println(returnedTransfer);
             }
         }catch (RestClientResponseException | ResourceAccessException e){
             //BasicLogger.log(e.getMessage());
@@ -50,7 +51,7 @@ public class TransferService {
         return returnedTransfer;
     }
 
-    private void setListOfTransfersByCurrentUser(AuthenticatedUser user){
+    private void setListOfTransfers(AuthenticatedUser user){
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(user.getToken());
         HttpEntity<Void> entity = new HttpEntity<>(headers);
@@ -69,7 +70,7 @@ public class TransferService {
 
     public String getMyTransferHistoryAsFormattedString(AuthenticatedUser user){
         //get most recent list of transfers by user id
-        setListOfTransfersByCurrentUser(user);
+        setListOfTransfers(user);
 
         //build 2 strings for sent and received
         StringBuilder sbSent = new StringBuilder("\n");
@@ -123,6 +124,7 @@ public class TransferService {
     }
 
     private Transfer getTransferFromMyTransfersUsingTransferID(AuthenticatedUser user, int id){
+//        setListOfTransfers(user);
         for(Transfer t: myTransferHistory){
             if(t.getTransferId()==id){
                 return t;
@@ -142,7 +144,7 @@ public class TransferService {
                     "\nACCOUNT TO: %s" +
                     "\nSTATUS: %s" +
                     "\nTYPE: %s " +
-                    "\nAMOUNT: %s";
+                    "\nAMOUNT: $ %s";
 
             String string = ((String.format(format,
                     t.getTransferId(),
