@@ -9,6 +9,8 @@ public class Transfer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotNull
     int transferId;
+
+
     @NotNull
     @OneToOne
     @JoinColumn(name="transfer_status_id", nullable=false)

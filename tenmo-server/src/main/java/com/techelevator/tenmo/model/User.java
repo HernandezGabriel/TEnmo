@@ -1,34 +1,52 @@
 package com.techelevator.tenmo.model;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 
-
+@Entity(name="tenmo_user")
 public class User {
 
-   private Long id;
+   @Id
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @NotNull
+   private Long userId;
+   @NotEmpty
    private String username;
+   @NotEmpty
+   @Column(name = "password_hash", length = 200, nullable = false)
    private String password;
+
+   @Transient
    private boolean activated;
+   @Transient
    private Set<Authority> authorities = new HashSet<>();
 
    public User() { }
 
-   public User(Long id, String username, String password, String authorities) {
-      this.id = id;
+   public User(Long userId, String username, String password) {
+      this.userId = userId;
+      this.username = username;
+      this.password = password;
+   }
+
+   public User(Long userId, String username, String password, String authorities) {
+      this.userId = userId;
       this.username = username;
       this.password = password;
       this.activated = true;
    }
 
-   public Long getId() {
-      return id;
+   public Long getUserId() {
+      return userId;
    }
 
-   public void setId(Long id) {
-      this.id = id;
+   public void setUserId(Long userId) {
+      this.userId = userId;
    }
 
    public String getUsername() {
@@ -75,7 +93,7 @@ public class User {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       User user = (User) o;
-      return id == user.id &&
+      return userId == user.userId &&
               activated == user.activated &&
               Objects.equals(username, user.username) &&
               Objects.equals(password, user.password) &&
@@ -84,16 +102,25 @@ public class User {
 
    @Override
    public int hashCode() {
-      return Objects.hash(id, username, password, activated, authorities);
+      return Objects.hash(userId, username, password, activated, authorities);
    }
+
+//   @Override
+//   public String toString() {
+//      return "User{" +
+//              "id=" + id +
+//              ", username='" + username + '\'' +
+//              ", activated=" + activated +
+//              ", authorities=" + authorities +
+//              '}';
+//   }
+
 
    @Override
    public String toString() {
       return "User{" +
-              "id=" + id +
+              "id=" + userId +
               ", username='" + username + '\'' +
-              ", activated=" + activated +
-              ", authorities=" + authorities +
               '}';
    }
 }

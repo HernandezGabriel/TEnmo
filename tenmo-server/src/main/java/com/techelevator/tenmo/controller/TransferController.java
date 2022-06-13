@@ -79,10 +79,10 @@ public class TransferController {
 
 
         Transfer t = transferRepository.save(transfer);
-        //setting desc bc save() doesn't automatically do it ???
 
+
+        //for some reason it returns t with status and type description as null, but it does update id
         System.out.println(t);
-
         return t;
 
     }

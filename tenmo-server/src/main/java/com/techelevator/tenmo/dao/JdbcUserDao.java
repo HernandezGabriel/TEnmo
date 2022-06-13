@@ -23,7 +23,7 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
-    public String findUsernameById(int id) {
+    public String findUsernameByUserId(int id) {
         String sql = "SELECT username FROM tenmo_user WHERE user_id = ? ;";
         String name = jdbcTemplate.queryForObject(sql, String.class, id);
         if(name==null){
@@ -107,7 +107,7 @@ public class JdbcUserDao implements UserDao {
 
     private User mapRowToUser(SqlRowSet rs) {
         User user = new User();
-        user.setId(rs.getLong("user_id"));
+        user.setUserId(rs.getLong("user_id"));
         user.setUsername(rs.getString("username"));
         user.setPassword(rs.getString("password_hash"));
         user.setActivated(true);
@@ -116,11 +116,11 @@ public class JdbcUserDao implements UserDao {
     }
     private User mapRowToUserWithoutPassword(SqlRowSet rs) {
         User user = new User();
-        user.setId(rs.getLong("user_id"));
+        user.setUserId(rs.getLong("user_id"));
         user.setUsername(rs.getString("username"));
         //user.setPassword(rs.getString("password_hash"));
-        user.setActivated(true);
-        user.setAuthorities("USER");
+        //user.setActivated(true);
+        //user.setAuthorities("USER");
         return user;
     }
 

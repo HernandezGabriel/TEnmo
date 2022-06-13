@@ -77,6 +77,7 @@ public class TransferService {
 
         //get most recent list of transfers by user id
         setListOfTransfersByCurrentUser(user);
+
         //get map of users and ids for switching to display usernames instead of account ID
         Map<Integer,String> usernameAndAccountIdMap=accountService.getAccountIdsAndUsernames(user);
 
@@ -109,7 +110,7 @@ public class TransferService {
 
         //get Own user id and account id
 
-        long myId=user.getUser().getId();
+        //long myId=user.getUser().getId(); //error?
         int myAccountId= accountService.getMyAccount(user).getAccountId();
 //        int myAccountId= accountService.findAccountIdFromUserId((int) myId,user);
 
@@ -119,16 +120,10 @@ public class TransferService {
         //going through each transaction in myTransferHistory and adding it to either String 1 or 2
         for(Transfer t: myTransferHistory){
             username="";
-            //Transfer status
-//            if(t.getTransferStatusId()==1){ status="Pending";}
-//            else if(t.getTransferStatusId()==2){ status="Approved";}
-//            else if(t.getTransferStatusId()==3){ status="Rejected";}
-//            else{status="Unknown";}
 
             //sort transfers from sent and received
             if(t.getAccountFrom()==myAccountId){
                 //find username passing account id and user for authentication
-                //username=accountService.findUsernameFromAccountID(t.getAccountTo(),user);
                 username= usernameAndAccountIdMap.get(t.getAccountTo());
                 sbSent.append(String.format(headersFormat,
                         //status, t.getTransferId(),username,t.getAmount()));
@@ -137,7 +132,6 @@ public class TransferService {
             }
             else if(t.getAccountTo()==myAccountId){
                 //find username passing account id and user for authentication
-                //username=accountService.findUsernameFromAccountID(t.getAccountFrom(),user);
                 username=usernameAndAccountIdMap.get(t.getAccountFrom());
                 sbReceived.append(String.format(headersFormat,
 //                        status, t.getTransferId(),username,t.getAmount()));

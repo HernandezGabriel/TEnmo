@@ -23,8 +23,8 @@ public class UserController {
     @GetMapping("/Users")
     public List<User> listUsers(){
 
-        List<User> list;
-        list= userDao.findUserIdAndUsername();
+        List<User> list = userDao.findUserIdAndUsername();
+        //System.out.println(list);
         return list;
 
     }

@@ -56,7 +56,7 @@ public class UserService {
         sb.append("ID | Username \n");
 
         for(User u: usersList){
-            sb.append(u.getId()+ " | " +u.getUsername() +"\n");
+            sb.append(u.getUserId()+ " | " +u.getUsername() +"\n");
         }
 
 
@@ -65,7 +65,7 @@ public class UserService {
 
     public boolean idExists(int id){
         for(User u: usersList){
-            if(u.getId().equals(((long) id))){
+            if(u.getUserId().equals(((long) id))){
                 return true;
             }
         }
@@ -74,7 +74,7 @@ public class UserService {
 
     public String getUsernameById(int id){
         for(User u : usersList){
-            if(u.getId().equals(id)){
+            if(u.getUserId().equals(id)){
                 return u.getUsername();
             }
         }

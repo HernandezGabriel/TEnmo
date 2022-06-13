@@ -23,6 +23,11 @@ public class Account {
     public Account() {
     }
 
+    public Account(int accountId, User user) {
+        this.accountId = accountId;
+        this.user = user;
+    }
+
     public Account(int accountId, User user, long balance) {
         this.accountId = accountId;
         this.user=user;
@@ -46,15 +51,24 @@ public class Account {
     }
 
     public long getUserId() {
-        return user.getId();
+        return user.getUserId();
+    }
+    public String getUsername(){return user.getUsername();}
+
+
+    public User getUser() {
+        return user;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     @Override
     public String toString() {
         return "Account{" +
                 "accountId=" + accountId +
-                ", userId=" + user.getId() +
+                ", userId=" + user.getUserId() +
                 ", balance=" + balance +
                 '}';
     }

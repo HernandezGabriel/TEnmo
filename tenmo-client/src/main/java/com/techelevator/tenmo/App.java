@@ -137,7 +137,7 @@ public class App {
             validSelection=true; //t by default
             accountSelection = consoleService.promptForInt("Please enter a user ID from the list above: ");
             //id isnt their own
-            if(currentUser.getUser().getId().equals((long)(accountSelection))){
+            if(currentUser.getUser().getUserId().equals((long)(accountSelection))){
                 System.out.println("ID can't be your own");
                 validSelection=false;
             }
@@ -179,7 +179,7 @@ public class App {
         int selectedUserId = getValidUserId();
         long selectedAmount = getValidAmount();
         //getting account id's from user id's
-        int fromAccount = accountService.findAccountIdFromUserId(Math.toIntExact(currentUser.getUser().getId()),currentUser);
+        int fromAccount = accountService.findAccountIdFromUserId(Math.toIntExact(currentUser.getUser().getUserId()),currentUser);
         int toAccount= accountService.findAccountIdFromUserId(selectedUserId, currentUser);
 
         // create transfer status and transfer type
