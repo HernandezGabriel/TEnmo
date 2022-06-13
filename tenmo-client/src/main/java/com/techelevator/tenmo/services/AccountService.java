@@ -23,6 +23,28 @@ public class AccountService {
         this.baseUrl = baseUrl;
     }
 
+    public Account getAccountWithAccountID(int accountId,AuthenticatedUser user){
+        //Sets user's token in a http entity
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(user.getToken());
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        Account newAccount=null;
+        boolean success=false;
+        try{
+            //GET request
+            ResponseEntity<Account> response =
+                    restTemplate.exchange(baseUrl+"Account?accountId="+accountId, HttpMethod.GET, entity, Account.class );
+
+            //sets account to response
+            newAccount =response.getBody();
+            success=true;
+
+        }catch (RestClientResponseException | ResourceAccessException e){
+            BasicLogger.log(e.getMessage());
+        }
+        return newAccount;
+    }
+
     private void setAccount(AuthenticatedUser user){
 
         //Sets user's token in a http entity

@@ -14,11 +14,12 @@ public class User {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    @NotNull
-   private Long userId;
+   private int userId;
    @NotEmpty
    private String username;
    @NotEmpty
    @Column(name = "password_hash", length = 200, nullable = false)
+   @Transient
    private String password;
 
    @Transient
@@ -28,24 +29,29 @@ public class User {
 
    public User() { }
 
-   public User(Long userId, String username, String password) {
+   public User(int userId, String username) {
+      this.userId = userId;
+      this.username = username;
+   }
+
+   public User(int userId, String username, String password) {
       this.userId = userId;
       this.username = username;
       this.password = password;
    }
 
-   public User(Long userId, String username, String password, String authorities) {
+   public User(int userId, String username, String password, String authorities) {
       this.userId = userId;
       this.username = username;
       this.password = password;
       this.activated = true;
    }
 
-   public Long getUserId() {
+   public int getUserId() {
       return userId;
    }
 
-   public void setUserId(Long userId) {
+   public void setUserId(int userId) {
       this.userId = userId;
    }
 
@@ -108,7 +114,7 @@ public class User {
 //   @Override
 //   public String toString() {
 //      return "User{" +
-//              "id=" + id +
+//              "Userid=" + id +
 //              ", username='" + username + '\'' +
 //              ", activated=" + activated +
 //              ", authorities=" + authorities +
@@ -119,8 +125,8 @@ public class User {
    @Override
    public String toString() {
       return "User{" +
-              "id=" + userId +
-              ", username='" + username + '\'' +
+              "userId=" + userId +
+              ", username='" + username +
               '}';
    }
 }

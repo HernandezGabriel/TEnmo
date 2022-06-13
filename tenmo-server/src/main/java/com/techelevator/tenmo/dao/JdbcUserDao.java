@@ -107,7 +107,7 @@ public class JdbcUserDao implements UserDao {
 
     private User mapRowToUser(SqlRowSet rs) {
         User user = new User();
-        user.setUserId(rs.getLong("user_id"));
+        user.setUserId(rs.getInt("user_id"));
         user.setUsername(rs.getString("username"));
         user.setPassword(rs.getString("password_hash"));
         user.setActivated(true);
@@ -116,7 +116,7 @@ public class JdbcUserDao implements UserDao {
     }
     private User mapRowToUserWithoutPassword(SqlRowSet rs) {
         User user = new User();
-        user.setUserId(rs.getLong("user_id"));
+        user.setUserId(rs.getInt("user_id"));
         user.setUsername(rs.getString("username"));
         //user.setPassword(rs.getString("password_hash"));
         //user.setActivated(true);

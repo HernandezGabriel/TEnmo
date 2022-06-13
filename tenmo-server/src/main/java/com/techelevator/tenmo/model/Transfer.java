@@ -10,49 +10,31 @@ public class Transfer {
     @NotNull
     int transferId;
 
-
     @NotNull
     @OneToOne
-    @JoinColumn(name="transfer_status_id", nullable=false)
+    @JoinColumn(name = "transfer_status_id", nullable = false)
     TransferStatus transferStatus;
     //int transferTypeId;
     @NotNull
     @OneToOne
-    @JoinColumn(name="transfer_type_id", nullable=false)
+    @JoinColumn(name = "transfer_type_id", nullable = false)
     TransferType transferType;
-    //int transferStatusId;
+
     @NotNull
-    int accountFrom;
+    @OneToOne
+    @JoinColumn(nullable = false, name="account_from")//,referencedColumnName = "account_id")
+    Account accountFrom;
+
     @NotNull
-    int accountTo;
+    @OneToOne
+ @JoinColumn(nullable = false, name="account_to" )
+   // @PrimaryKeyJoinColumn
+    Account accountTo;
+
     @NotNull
     long amount;
 
     public Transfer() {
-    }
-
-    public String getTransferStatusDesc(){
-        return transferStatus.transferStatusDesc;
-    }
-
-    public int getTransferStatusId(){
-        return transferStatus.transferStatusId;
-    }
-    public String getTransferTypeDesc(){
-        return transferType.transferTypeDesc;
-    }
-
-    public int getTransferTypeId(){
-        return transferType.transferTypeId;
-    }
-
-    public Transfer(int transferId, TransferStatus transferStatus, TransferType transferType, int accountFrom, int accountTo, long amount) {
-        this.transferId = transferId;
-        this.transferStatus = transferStatus;
-        this.transferType = transferType;
-        this.accountFrom = accountFrom;
-        this.accountTo = accountTo;
-        this.amount = amount;
     }
 
     @Override
@@ -65,6 +47,23 @@ public class Transfer {
                 ", accountTo=" + accountTo +
                 ", amount=" + amount +
                 '}';
+    }
+
+    public Transfer(int transferId, TransferStatus transferStatus, TransferType transferType, Account accountFrom, Account accountTo, long amount) {
+        this.transferId = transferId;
+        this.transferStatus = transferStatus;
+        this.transferType = transferType;
+        this.accountFrom = accountFrom;
+        this.accountTo = accountTo;
+        this.amount = amount;
+    }
+
+    public int getTransferId() {
+        return transferId;
+    }
+
+    public void setTransferId(int transferId) {
+        this.transferId = transferId;
     }
 
     public TransferStatus getTransferStatus() {
@@ -83,35 +82,19 @@ public class Transfer {
         this.transferType = transferType;
     }
 
-    public int getTransferId() {
-        return transferId;
-    }
-
-    public void setTransferId(int transferId) {
-        this.transferId = transferId;
-    }
-
-//    public int getTransferStatusId() {
-//        return transferStatusId;
-//    }
-
-//    public void setTransferStatusId(int transferStatusId) {
-//        this.transferStatusId = transferStatusId;
-//    }
-
-    public int getAccountFrom() {
+    public Account getAccountFrom() {
         return accountFrom;
     }
 
-    public void setAccountFrom(int accountFrom) {
+    public void setAccountFrom(Account accountFrom) {
         this.accountFrom = accountFrom;
     }
 
-    public int getAccountTo() {
+    public Account getAccountTo() {
         return accountTo;
     }
 
-    public void setAccountTo(int accountTo) {
+    public void setAccountTo(Account accountTo) {
         this.accountTo = accountTo;
     }
 
@@ -122,33 +105,6 @@ public class Transfer {
     public void setAmount(long amount) {
         this.amount = amount;
     }
-
-//    public int getTransferTypeId() {
-//        return transferTypeId;
-//    }
-//
-//    public void setTransferTypeId(int transferTypeId) {
-//        this.transferTypeId = transferTypeId;
-//    }
-
-//    public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, long amount) {
-//        this.transferId = transferId;
-//        this.transferTypeId = transferTypeId;
-//        this.transferStatusId = transferStatusId;
-//        this.accountFrom = accountFrom;
-//        this.accountTo = accountTo;
-//        this.amount = amount;
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "Transfer{" +
-//                "transferId=" + transferId +
-//                ", transferTypeId=" + transferTypeId +
-//                ", transferStatusId=" + transferStatusId +
-//                ", accountFrom=" + accountFrom +
-//                ", accountTo=" + accountTo +
-//                ", amount=" + amount +
-//                '}';
-//    }
 }
+
+

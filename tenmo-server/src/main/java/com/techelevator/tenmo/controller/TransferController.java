@@ -36,7 +36,7 @@ public class TransferController {
         this.transferService = transferService;
     }
 
-
+//TODO NOT WORKING
     //needs to be converted to better handle different types of transfers such as creating vs requesting!
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/InitTransfer")
@@ -61,8 +61,11 @@ public class TransferController {
         //if(type = REQUEST , status = pending, check account from == yours, account to != yours, transfer has to already exist based on id
         //new transfer has to have new status of either approved or denied not pending!
 
+
+        System.out.println(transfer);
         //using TransferService to transfer money between 2 accounts
-        boolean transferSuccessful = transferService.transferMoney(transfer.getAccountFrom(),transfer.getAccountTo(),transfer.getAmount());
+        boolean transferSuccessful = transferService.transferMoney(transfer.getAccountFrom().getAccountId(),transfer.getAccountTo().getAccountId(),transfer.getAmount());
+       // boolean transferSuccessful = transferService.transferMoney(transfer.getAccountFrom(),transfer.getAccountTo(),transfer.getAmount());
 
         if (!transferSuccessful) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transfer Init failed.");
@@ -75,6 +78,8 @@ public class TransferController {
             transfer.setTransferStatus(transferStatus);
 
         }
+
+        System.out.println("fund transfer fine ");
 
 
 

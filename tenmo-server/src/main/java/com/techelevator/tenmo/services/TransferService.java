@@ -19,10 +19,10 @@ public class TransferService {
         try{
 //            Account sender = accountRepository.findAccountByAccountId(accountIdSender);
 //            Account receiver = accountRepository.findAccountByAccountId(accountIdReceiver);
-
-            if(accountIdReceiver==accountIdSender){
-                return false;
-            }
+//
+//            if(accountIdReceiver==accountIdSender){
+//                return false;
+//            }
 
             long senderBalance= accountRepository.findBalanceByAccountId(accountIdSender);
             long receiverBalance= accountRepository.findBalanceByAccountId(accountIdReceiver);
@@ -30,17 +30,17 @@ public class TransferService {
             long senderNewAmount = senderBalance - (amount);
             long receiverNewAmount = receiverBalance + (amount);
 
-            if(senderNewAmount<0){
-                return false;
-            }
+//            if(senderNewAmount<0){
+//                return false;
+//            }
             accountRepository.changeAmount( senderNewAmount,accountIdSender);
-            if(senderNewAmount!=accountRepository.findBalanceByAccountId(accountIdSender)){
-                return false;
-            }
+//            if(senderNewAmount!=accountRepository.findBalanceByAccountId(accountIdSender)){
+//                return false;
+//            }
             accountRepository.changeAmount( receiverNewAmount, accountIdReceiver);
-            if(receiverNewAmount!=accountRepository.findBalanceByAccountId(accountIdSender)){
-                return false;
-            }
+//            if(receiverNewAmount!=accountRepository.findBalanceByAccountId(accountIdSender)){
+//                return false;
+//            }
 
 
         }catch (Exception e){

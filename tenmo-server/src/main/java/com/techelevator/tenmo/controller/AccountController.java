@@ -42,6 +42,13 @@ public class AccountController {
 //        return returnedAccount.getAccountId();
     }
 
+    @GetMapping("/Account")  //"/AccountId?accountId=1002
+    public Account getAccountFromAccountId(@RequestParam int accountId){
+        // Account returnedAccount = accountRepository.findAccountByUserId(userId);
+        return accountRepository.findAccountByAccountId(accountId);
+//        return returnedAccount.getAccountId();
+    }
+
 
     //could be more secure with joins/annotations??
     @GetMapping("/Username") // Username?accountId=?

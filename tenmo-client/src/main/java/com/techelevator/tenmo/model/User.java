@@ -2,14 +2,34 @@ package com.techelevator.tenmo.model;
 
 public class User {
 
-    private Long userId;
+    private int userId;
     private String username;
 
-    public Long getUserId() {
+    public User(int userId, String username) {
+        this.userId = userId;
+        this.username = username;
+    }
+
+    public User(int userId) {
+        this.userId = userId;
+    }
+
+    public User() {
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", username='" + username +
+                '}';
+    }
+
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
@@ -25,7 +45,7 @@ public class User {
     public boolean equals(Object other) {
         if (other instanceof User) {
             User otherUser = (User) other;
-            return otherUser.getUserId().equals(userId)
+            return otherUser.getUserId()==(userId)
                     && otherUser.getUsername().equals(username);
         } else {
             return false;

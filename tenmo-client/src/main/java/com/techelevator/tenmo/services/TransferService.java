@@ -94,19 +94,19 @@ public class TransferService {
 
         String headersFormat= "| %-10s | %-11s | %-12s | %-10s |";
 
-        sbSent.append(line.toString());
+        sbSent.append(line);
         sbSent.append((String.format("| %-52s |\n", "TRANSFERS SENT")));
 
         String headers= String.format(headersFormat, "STATUS","TRANSFER_ID","USER_TO","AMOUNT");
         sbSent.append(headers+"\n");
-        sbSent.append(line.toString());
+        sbSent.append(line);
 
-        sbReceived.append(line.toString());
+        sbReceived.append(line);
         sbReceived.append((String.format("| %-52s |\n", "TRANSFERS RECEIVED")));
 
         headers= String.format(headersFormat,"STATUS","TRANSFER_ID","USER_FROM","AMOUNT");
         sbReceived.append(headers+"\n");
-        sbReceived.append(line.toString());
+        sbReceived.append(line);
 
         //get Own user id and account id
 
@@ -117,12 +117,24 @@ public class TransferService {
         String status="";
         String username="";
 
-        //going through each transaction in myTransferHistory and adding it to either String 1 or 2
+        //going through each transaction in myTransferHistory and adding it to either String 1 or
+
+
+        //transfer history is missing account!!!
+        for (Transfer t: myTransferHistory){
+            System.out.println(t);
+        }
+
+
         for(Transfer t: myTransferHistory){
+
             username="";
 
+
+
             //sort transfers from sent and received
-            if(t.getAccountFrom()==myAccountId){
+
+            if(t.getAccountFrom().getAccountId()==myAccountId){
                 //find username passing account id and user for authentication
                 username= usernameAndAccountIdMap.get(t.getAccountTo());
                 sbSent.append(String.format(headersFormat,
@@ -130,7 +142,7 @@ public class TransferService {
                         t.getTransferStatus().getTransferStatusDesc(), t.getTransferId(),username,t.getAmount()));
                 sbSent.append("\n");
             }
-            else if(t.getAccountTo()==myAccountId){
+            else if(t.getAccountTo().getAccountId()==myAccountId){
                 //find username passing account id and user for authentication
                 username=usernameAndAccountIdMap.get(t.getAccountFrom());
                 sbReceived.append(String.format(headersFormat,

@@ -2,35 +2,35 @@ package com.techelevator.tenmo.model;
 
 public class TransferStatus {
 
-    int TransferStatusId;
+    int transferStatusId;
     String transferStatusDesc;
 
     public TransferStatus() {
     }
 
     public TransferStatus(int transferStatusId, String transferStatusDesc) {
-        TransferStatusId = transferStatusId;
+        this.transferStatusId = transferStatusId;
         this.transferStatusDesc = transferStatusDesc;
     }
 
     public TransferStatus(int transferStatusId) {
-        TransferStatusId = transferStatusId;
+        this.transferStatusId = transferStatusId;
     }
 
     @Override
     public String toString() {
         return "TransferStatus{" +
-                "TransferStatusId=" + TransferStatusId +
+                "TransferStatusId=" + transferStatusId +
                 ", transferStatusDesc='" + transferStatusDesc + '\'' +
                 '}';
     }
 
     public int getTransferStatusId() {
-        return TransferStatusId;
+        return transferStatusId;
     }
 
     public void setTransferStatusId(int transferStatusId) {
-        TransferStatusId = transferStatusId;
+        this.transferStatusId = transferStatusId;
     }
 
     public String getTransferStatusDesc() {

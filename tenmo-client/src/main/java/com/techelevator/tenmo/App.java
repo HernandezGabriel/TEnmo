@@ -137,7 +137,7 @@ public class App {
             validSelection=true; //t by default
             accountSelection = consoleService.promptForInt("Please enter a user ID from the list above: ");
             //id isnt their own
-            if(currentUser.getUser().getUserId().equals((long)(accountSelection))){
+            if(currentUser.getUser().getUserId()==((long)(accountSelection))){
                 System.out.println("ID can't be your own");
                 validSelection=false;
             }
@@ -179,14 +179,20 @@ public class App {
         int selectedUserId = getValidUserId();
         long selectedAmount = getValidAmount();
         //getting account id's from user id's
-        int fromAccount = accountService.findAccountIdFromUserId(Math.toIntExact(currentUser.getUser().getUserId()),currentUser);
-        int toAccount= accountService.findAccountIdFromUserId(selectedUserId, currentUser);
+        int fromAccountId = accountService.findAccountIdFromUserId(Math.toIntExact(currentUser.getUser().getUserId()),currentUser);
+        int toAccountId= accountService.findAccountIdFromUserId(selectedUserId, currentUser);
 
+
+        Account fromAccount = accountService.getMyAccount(currentUser);
+        Account toAccount = accountService.getAccountWithAccountID(toAccountId,currentUser);
+        System.out.println(toAccount.getBalance());
         // create transfer status and transfer type
         TransferStatus ts = new TransferStatus(1);//pending
         TransferType tt = new TransferType(2); //send
         //create transfer
         Transfer newTransfer = new Transfer(0,ts,tt,fromAccount,toAccount,selectedAmount);
+
+        System.out.println(newTransfer);
         //Transfer newTransfer = new Transfer(0,1,2,fromAccount,toAccount,selectedAmount);
         //post transfer!
         Transfer returnedTransfer=transferService.postTransfer(currentUser,newTransfer);

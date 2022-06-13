@@ -15,12 +15,14 @@ public class Account {
     @OneToOne
     @JoinColumn(nullable = false, name = "user_id")
     User user;
-//    int userId;
-//
     @NotNull(message = "balance cannot be negative or empty")
     long balance;
 
     public Account() {
+    }
+
+    public Account(int accountId) {
+        this.accountId = accountId;
     }
 
     public Account(int accountId, User user) {
@@ -50,9 +52,6 @@ public class Account {
         this.balance = balance;
     }
 
-    public long getUserId() {
-        return user.getUserId();
-    }
     public String getUsername(){return user.getUsername();}
 
 
@@ -68,7 +67,7 @@ public class Account {
     public String toString() {
         return "Account{" +
                 "accountId=" + accountId +
-                ", userId=" + user.getUserId() +
+                ", user=" + user +
                 ", balance=" + balance +
                 '}';
     }
