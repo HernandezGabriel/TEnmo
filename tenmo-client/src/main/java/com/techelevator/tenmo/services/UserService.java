@@ -26,21 +26,16 @@ public class UserService {
 
 
     private void setListOfUsers(AuthenticatedUser user){
-
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(user.getToken());
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        boolean success=false;
         try{
-            //GET request
             ResponseEntity<List<User>> response =
                     restTemplate.exchange(baseUrl + "Users", HttpMethod.GET, entity, new ParameterizedTypeReference<List<User>>() {
                     });
 
-            //sets account to response
             usersList = response.getBody();
-            success=true;
 
         }catch (RestClientResponseException | ResourceAccessException e){
             BasicLogger.log(e.getMessage());
@@ -53,13 +48,11 @@ public class UserService {
         setListOfUsers(user);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("ID | Username \n");
+        sb.append("ID  | Username \n");
 
         for(User u: usersList){
             sb.append(u.getUserId()+ " | " +u.getUsername() +"\n");
         }
-
-
         return sb.toString();
     }
 
@@ -78,8 +71,7 @@ public class UserService {
                 return u.getUsername();
             }
         }
-
-        return "";
+        return null;
 
     }
 }

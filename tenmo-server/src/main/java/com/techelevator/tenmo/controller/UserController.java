@@ -22,9 +22,7 @@ public class UserController {
 
     @GetMapping("/Users")
     public List<User> listUsers(){
-
         List<User> list = userDao.findUserIdAndUsername();
-        //System.out.println(list);
         return list;
 
     }

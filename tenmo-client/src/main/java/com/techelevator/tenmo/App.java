@@ -13,7 +13,7 @@ public class App {
     //Added
     private final AccountService accountService = new AccountService(API_BASE_URL);
     private final UserService userService = new UserService(API_BASE_URL);
-    private final TransferService transferService = new TransferService(API_BASE_URL, accountService, userService);
+    private final TransferService transferService = new TransferService(API_BASE_URL, accountService);
 
     private AuthenticatedUser currentUser;
 
@@ -94,28 +94,20 @@ public class App {
     }
 
 	private void viewCurrentBalance() {
-        System.out.println("Your Current Balance is : " + accountService.getBalance(currentUser));
+        System.out.println("Your Current Balance is : " + accountService.getMyBalance(currentUser));
 	}
 
 	private void viewTransferHistory() {
-
         System.out.println(transferService.getMyTransferHistoryAsFormattedString(currentUser));
-
-        //TODO implement more details view
         viewDetailedTransfer();
-
     }
 
-    //added to view more details
     private void viewDetailedTransfer(){
         try {
             int selection = consoleService.promptForInt("Enter a Transfer Id from the list above to view details or select 0 to continue");
-            if (selection==0){
-                return;
-            }
+            if (selection==0){return;}
             else{
                 System.out.println(transferService.getMyTransferDetails(currentUser, selection));
-
             }
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -175,32 +167,19 @@ public class App {
 
         // display list of users
         System.out.println(userService.getListOfUsersAsString(currentUser));
-        //creating valid transfer
+
+        //prompt for user input
         int selectedUserId = getValidUserId();
         long selectedAmount = getValidAmount();
-        //getting account id's from user id's
-        int fromAccountId = accountService.findAccountIdFromUserId(Math.toIntExact(currentUser.getUser().getUserId()),currentUser);
-        int toAccountId= accountService.findAccountIdFromUserId(selectedUserId, currentUser);
-
 
         Account fromAccount = accountService.getMyAccount(currentUser);
-        Account toAccount = accountService.getAccountWithAccountID(toAccountId,currentUser);
-        System.out.println(toAccount.getBalance());
-        // create transfer status and transfer type
+        Account toAccount = accountService.findAccountFromUserId(selectedUserId,currentUser);
         TransferStatus ts = new TransferStatus(1);//pending
         TransferType tt = new TransferType(2); //send
-        //create transfer
-        Transfer newTransfer = new Transfer(0,ts,tt,fromAccount,toAccount,selectedAmount);
 
-        System.out.println(newTransfer);
-        //Transfer newTransfer = new Transfer(0,1,2,fromAccount,toAccount,selectedAmount);
+        Transfer newTransfer = new Transfer(0,ts,tt,fromAccount,toAccount,selectedAmount);
         //post transfer!
         Transfer returnedTransfer=transferService.postTransfer(currentUser,newTransfer);
-
-        System.out.println(returnedTransfer.getTransferId());
-        System.out.println(returnedTransfer.toString());
-        //returned transfer should be approved and have a new id
-
         viewCurrentBalance();
 	}
 

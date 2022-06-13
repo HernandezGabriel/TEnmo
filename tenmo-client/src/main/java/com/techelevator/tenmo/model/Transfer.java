@@ -3,15 +3,10 @@ package com.techelevator.tenmo.model;
 public class Transfer {
 
     int transferId;
-
     TransferStatus transferStatus;
-
     TransferType transferType;
-
     Account accountFrom;
-
     Account accountTo;
-
     long amount;
 
     @Override
