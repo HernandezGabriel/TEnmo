@@ -100,10 +100,30 @@ public class App {
 	}
 
 	private void viewTransferHistory() {
+
         System.out.println(transferService.getMyTransferHistoryAsFormattedString(currentUser));
 
         //TODO implement more details view
-	}
+        viewDetailedTransfer();
+
+    }
+
+    //added to view more details
+    private void viewDetailedTransfer(){
+        try {
+            int selection = consoleService.promptForInt("Enter a Transfer Id from the list above to view details or select 0 to continue");
+            if (selection==0){
+                return;
+            }
+            else{
+                System.out.println(transferService.getMyTransferDetails(currentUser, selection));
+
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            viewDetailedTransfer();
+        }
+    }
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
@@ -176,6 +196,26 @@ public class App {
 	}
 
     private void requestBucks() {
+        //display users
+        System.out.println(userService.getListOfUsersAsString(currentUser));
+        //get user id
+        int selectedUserId = getValidUserId();
+        //valid amount
+        boolean validSelection;
+        long amount=0L;
+        do{
+            validSelection=true;
+            amount = consoleService.promptForLong("How much TE Bucks would you like to Request? ");
+            if(amount<=0) {
+                validSelection = false;
+                System.out.println("Amount cannot be 0 or negative");
+            }}
+        while(!validSelection);
+
+
+
+
+
 		// TODO Auto-generated method stub
 		
 	}

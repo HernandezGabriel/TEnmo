@@ -38,10 +38,14 @@ public class TransferService {
             ResponseEntity<Transfer> response =
                     restTemplate.exchange(baseUrl+"InitTransfer", HttpMethod.POST, entity, Transfer.class );
 
-            //sets account to response
+            //sets transfer to response
             returnedTransfer = response.getBody();
-            success=true;
+            if(returnedTransfer.getTransferId()!=0){
 
+                success=true;
+            }else{
+                throw new ResourceAccessException("Error: Transfer not returned");
+            }
         }catch (RestClientResponseException | ResourceAccessException e){
             //BasicLogger.log(e.getMessage());
             System.out.println(e.getMessage());
@@ -73,21 +77,21 @@ public class TransferService {
 
         //get most recent list of transfers by user id
         setListOfTransfersByCurrentUser(user);
-        //get map of users and ids
-        Map<Integer,String> usernameAndIdMap=accountService.getAccountIdsAndUsernames(user);
+        //get map of users and ids for switching to display usernames instead of account ID
+        Map<Integer,String> usernameAndAccountIdMap=accountService.getAccountIdsAndUsernames(user);
 
         //build 2 strings for sent and received
         StringBuilder sbSent = new StringBuilder("\n");
         StringBuilder sbReceived = new StringBuilder("\n");
 
+        //-----------------------------------
         StringBuilder line= new StringBuilder();
-       // line.append("\n");
         for (int i = 0; i < 56 ; i++) {
             line.append("_");
         }
         line.append("\n");
 
-        String headersFormat="| %-10s | %-11s | %-12s | %-10s |";
+        String headersFormat= "| %-10s | %-11s | %-12s | %-10s |";
 
         sbSent.append(line.toString());
         sbSent.append((String.format("| %-52s |\n", "TRANSFERS SENT")));
@@ -125,7 +129,7 @@ public class TransferService {
             if(t.getAccountFrom()==myAccountId){
                 //find username passing account id and user for authentication
                 //username=accountService.findUsernameFromAccountID(t.getAccountTo(),user);
-                username= usernameAndIdMap.get(t.getAccountTo());
+                username= usernameAndAccountIdMap.get(t.getAccountTo());
                 sbSent.append(String.format(headersFormat,
                         status, t.getTransferId(),username,t.getAmount()));
                 sbSent.append("\n");
@@ -133,7 +137,7 @@ public class TransferService {
             else if(t.getAccountTo()==myAccountId){
                 //find username passing account id and user for authentication
                 //username=accountService.findUsernameFromAccountID(t.getAccountFrom(),user);
-                username=usernameAndIdMap.get(t.getAccountFrom());
+                username=usernameAndAccountIdMap.get(t.getAccountFrom());
                 sbReceived.append(String.format(headersFormat,
                         status, t.getTransferId(),username,t.getAmount()));
                 sbReceived.append("\n");
@@ -146,6 +150,40 @@ public class TransferService {
         return sbSent.toString()+sbReceived.toString();
     }
 
+    private Transfer getTransferFromMyTransfersUsingTransferID(AuthenticatedUser user, int id){
+        //no need to update since this gets called after viewing list of transfer?
+        //setListOfTransfersByCurrentUser(user);
+        for(Transfer t: myTransferHistory){
+            if(t.getTransferId()==id){
+                return t;
+            }
+        }
+        return null;
+    }
 
+    public String getMyTransferDetails(AuthenticatedUser user, int transferId){
+        Transfer t = getTransferFromMyTransfersUsingTransferID(user,transferId);
+        if(t==null){
+            return "Invalid Transfer ID";
+        }
+        else{
+            String format ="\nTRANSFER_ID: %s " +
+                    "\nACCOUNT FROM: %s " +
+                    "\nACCOUNT TO: %s" +
+                    "\nSTATUS: %s" +
+                    "\nTYPE: %s " +
+                    "\nAMOUNT: %s";
+
+            String string = ((String.format(format,
+                    t.getTransferId(),
+                    t.getAccountFrom(),
+                    t.getAccountTo(),
+                    t.getTransferStatusId(),
+                    t.getTransferTypeId(),
+                    t.getAmount())));
+
+            return string;
+        }
+    }
 
 }

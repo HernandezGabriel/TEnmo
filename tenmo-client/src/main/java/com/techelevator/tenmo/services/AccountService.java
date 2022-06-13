@@ -5,10 +5,7 @@ import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.util.BasicLogger;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
@@ -32,7 +29,6 @@ public class AccountService {
        HttpHeaders headers = new HttpHeaders();
        headers.setBearerAuth(user.getToken());
        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
 
         boolean success=false;
         try{
@@ -67,6 +63,9 @@ public class AccountService {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(user.getToken());
         HttpEntity<Void> entity = new HttpEntity<>(headers);
+        //HttpEntity<Integer> entity = new HttpEntity<>(userId,headers);
+
+
         int accountId=0;
         boolean success=false;
         try{
@@ -87,6 +86,7 @@ public class AccountService {
     public boolean hasEnoughFunds(Long amount, AuthenticatedUser user){
         //going to get most recent account info
         setAccount(user);
+
         if(account.getBalance()<amount){return false;}
         if(account.getBalance()>=amount){return true;}
         return false;

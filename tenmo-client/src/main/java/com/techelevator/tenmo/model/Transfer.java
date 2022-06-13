@@ -48,27 +48,27 @@ public class Transfer {
         return amount;
     }
 
-    public void setAmount(long amount) {
-        this.amount = amount;
-    }
+        public void setAmount(long amount) {
+            this.amount = amount;
+        }
 
-    public int getTransferTypeId() {
-        return transferTypeId;
-    }
+        public int getTransferTypeId() {
+            return transferTypeId;
+        }
 
-    public void setTransferTypeId(int transferTypeId) {
-        this.transferTypeId = transferTypeId;
-    }
+        public void setTransferTypeId(int transferTypeId) {
+            this.transferTypeId = transferTypeId;
+        }
 
-    @Override
-    public String toString() {
-        return "Transfer{" +
-                "transferId=" + transferId +
-                ", transferStatusId=" + transferStatusId +
-                ", transferTypeId=" + transferTypeId +
-                ", accountFrom=" + accountFrom +
-                ", accountTo=" + accountTo +
-                ", amount=" + amount +
+        @Override
+        public String toString() {
+            return "Transfer{" +
+                    "transferId=" + transferId +
+                    ", transferStatusId=" + transferStatusId +
+                    ", transferTypeId=" + transferTypeId +
+                    ", accountFrom=" + accountFrom +
+                    ", accountTo=" + accountTo +
+                    ", amount=" + amount +
                 '}';
     }
 

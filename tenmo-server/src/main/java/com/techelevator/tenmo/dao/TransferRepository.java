@@ -9,6 +9,8 @@ public interface TransferRepository extends JpaRepository<Transfer, Integer> {
 
       List<Transfer> findAllByAccountFrom(int accountFrom);
       List<Transfer> findAllByAccountTo(int accountTo);
+
+      
       Transfer save(Transfer t);
 
 //    TransferRepository getByTransferId(int id);

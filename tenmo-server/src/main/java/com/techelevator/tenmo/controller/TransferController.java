@@ -33,9 +33,30 @@ public class TransferController {
         this.transferService = transferService;
     }
 
+
+    //needs to be converted to better handle different types of transfers such as creating vs requesting!
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/InitTransfer")
     public Transfer createTransfer(@Valid @RequestBody Transfer transfer){
+//
+//        if(transfer.equals(null)){
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+//        }
+//        else if()
+
+        //if(transfer type = SEND) //sending money
+        //      check account from = principal username
+            //  process transfer of funds immediatly
+        //add to transfer db a transfer with status completed
+
+        //if(transfer type = REQUEST) // making a request
+        // check account to = principal username
+        // post it to db as pending? transfer type of request pending
+        //
+
+        //receive transfer //updating a pending request that belongs to you from pending to approved ->processing
+        //if(type = REQUEST , status = pending, check account from == yours, account to != yours, transfer has to already exist based on id
+        //new transfer has to have new status of either approved or denied not pending!
 
         //using TransferService to transfer money between 2 accounts
         boolean transferSuccessful = transferService.transferMoney(transfer.getAccountFrom(),transfer.getAccountTo(),transfer.getAmount());
@@ -48,8 +69,7 @@ public class TransferController {
             transfer.setTransferStatusId(2); //2==approved
         }
         return transferRepository.save(transfer); //return new transfer
-//            //using TransferService to transfer money between 2 accounts
-//            transferService.transferMoney(transfer.getAccountFrom(),transfer.getAccountTo(),transfer.getAmount());
+
     }
 
     @GetMapping("/MyTransfers")

@@ -36,15 +36,19 @@ public class AccountController {
         return accountRepository.findAccountByUserId(userDao.findIdByUsername(principal.getName()));
     }
 
-    @GetMapping("/AccountId")  //"/AccountId?UserId=?"
+    @GetMapping("/AccountId")  //"/AccountId?userId=1002
     public Integer getAccountIdFromUserId(@RequestParam int userId){
-        Account returnedAccount = accountRepository.findAccountByUserId(userId);
-        return returnedAccount.getAccountId();
+       // Account returnedAccount = accountRepository.findAccountByUserId(userId);
+    return accountRepository.findAccountIdByUserId(userId);
+//        return returnedAccount.getAccountId();
     }
 
+
+    //could be more secure with joins/annotations??
     @GetMapping("/Username") // Username?accountId=?
     public String getUsernameFromAccountId(@RequestParam int accountId){
-        int userId=accountRepository.findAccountByAccountId(accountId).getUserId();
+//        int userId=accountRepository.findAccountByAccountId(accountId).getUserId();
+        int userId= (int) accountRepository.findUserIdByAccountId(accountId);
         return userDao.findUsernameById(userId);
     }
 
