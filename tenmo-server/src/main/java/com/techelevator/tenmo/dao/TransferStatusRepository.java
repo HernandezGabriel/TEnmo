@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface TransferStatusRepository extends JpaRepository<TransferStatus, Integer> {
 
     TransferStatus getTransferStatusByTransferStatusId(int id);
+    String getTransferStatusDescByTransferStatusId(int id);
 }

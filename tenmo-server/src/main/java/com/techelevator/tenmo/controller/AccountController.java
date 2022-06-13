@@ -37,7 +37,7 @@ public class AccountController {
     }
 
     @GetMapping("/AccountId")  //"/AccountId?userId=1002
-    public Integer getAccountIdFromUserId(@RequestParam int userId){
+    public int getAccountIdFromUserId(@RequestParam int userId){
        // Account returnedAccount = accountRepository.findAccountByUserId(userId);
     return accountRepository.findAccountIdByUserId(userId);
 //        return returnedAccount.getAccountId();

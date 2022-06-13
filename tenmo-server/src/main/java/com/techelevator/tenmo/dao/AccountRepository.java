@@ -10,6 +10,8 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
     Account findAccountByAccountId(int accountId);
     Account findAccountByUserId(int userId);
+
+    @Query(value="SElECT account_id from account WHERE user_id = ?1", nativeQuery = true)
     int findAccountIdByUserId(int userId);
 
     //not working from just name

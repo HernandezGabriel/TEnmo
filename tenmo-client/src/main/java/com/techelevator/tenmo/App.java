@@ -1,8 +1,6 @@
 package com.techelevator.tenmo;
 
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.*;
 
 public class App {
@@ -183,8 +181,13 @@ public class App {
         //getting account id's from user id's
         int fromAccount = accountService.findAccountIdFromUserId(Math.toIntExact(currentUser.getUser().getId()),currentUser);
         int toAccount= accountService.findAccountIdFromUserId(selectedUserId, currentUser);
+
+        // create transfer status and transfer type
+        TransferStatus ts = new TransferStatus(1);//pending
+        TransferType tt = new TransferType(2); //send
         //create transfer
-        Transfer newTransfer = new Transfer(0,1,2,fromAccount,toAccount,selectedAmount);
+        Transfer newTransfer = new Transfer(0,ts,tt,fromAccount,toAccount,selectedAmount);
+        //Transfer newTransfer = new Transfer(0,1,2,fromAccount,toAccount,selectedAmount);
         //post transfer!
         Transfer returnedTransfer=transferService.postTransfer(currentUser,newTransfer);
 

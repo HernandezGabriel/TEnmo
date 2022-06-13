@@ -12,17 +12,20 @@ public class Account {
     int accountId;
 
     @NotNull
-    int userId;
-
+    @OneToOne
+    @JoinColumn(nullable = false, name = "user_id")
+    User user;
+//    int userId;
+//
     @NotNull(message = "balance cannot be negative or empty")
     long balance;
 
     public Account() {
     }
 
-    public Account(int accountId, int userId, long balance) {
+    public Account(int accountId, User user, long balance) {
         this.accountId = accountId;
-        this.userId = userId;
+        this.user=user;
         this.balance = balance;
     }
 
@@ -42,19 +45,16 @@ public class Account {
         this.balance = balance;
     }
 
-    public int getUserId() {
-        return userId;
+    public long getUserId() {
+        return user.getId();
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
 
     @Override
     public String toString() {
         return "Account{" +
                 "accountId=" + accountId +
-                ", userId=" + userId +
+                ", userId=" + user.getId() +
                 ", balance=" + balance +
                 '}';
     }

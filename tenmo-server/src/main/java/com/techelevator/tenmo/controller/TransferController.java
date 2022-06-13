@@ -1,10 +1,9 @@
 package com.techelevator.tenmo.controller;
 
 
-import com.techelevator.tenmo.dao.AccountRepository;
-import com.techelevator.tenmo.dao.TransferRepository;
-import com.techelevator.tenmo.dao.UserDao;
+import com.techelevator.tenmo.dao.*;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferStatus;
 import com.techelevator.tenmo.services.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +25,10 @@ public class TransferController {
     private AccountRepository accountRepository;
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private TransferStatusRepository transferStatusRepository;
+    @Autowired
+    private TransferTypeRepository transferTypeRepository;
 
     private final TransferService transferService;
 
@@ -65,10 +68,22 @@ public class TransferController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transfer Init failed.");
         }
         else{
-            //set transfer status id to approved
-            transfer.setTransferStatusId(2); //2==approved
+          // set transfer status id to approved
+           // transfer.setTransferStatusId(2); //2==approved
+            TransferStatus transferStatus = new TransferStatus();
+            transferStatus.setTransferStatusId(2);
+            transfer.setTransferStatus(transferStatus);
+
         }
-        return transferRepository.save(transfer); //return new transfer
+
+
+
+        Transfer t = transferRepository.save(transfer);
+        //setting desc bc save() doesn't automatically do it ???
+
+        System.out.println(t);
+
+        return t;
 
     }
 

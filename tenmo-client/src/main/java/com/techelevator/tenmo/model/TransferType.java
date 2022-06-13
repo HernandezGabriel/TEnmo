@@ -9,6 +9,10 @@ public class TransferType {
         this.transferTypeDesc = transferTypeDesc;
     }
 
+    public TransferType(int transferTypeId) {
+        this.transferTypeId = transferTypeId;
+    }
+
     public int getTransferTypeId() {
         return transferTypeId;
     }

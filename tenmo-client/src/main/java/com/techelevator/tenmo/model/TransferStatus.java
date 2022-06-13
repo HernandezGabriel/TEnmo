@@ -13,6 +13,10 @@ public class TransferStatus {
         this.transferStatusDesc = transferStatusDesc;
     }
 
+    public TransferStatus(int transferStatusId) {
+        TransferStatusId = transferStatusId;
+    }
+
     @Override
     public String toString() {
         return "TransferStatus{" +

@@ -120,10 +120,10 @@ public class TransferService {
         for(Transfer t: myTransferHistory){
             username="";
             //Transfer status
-            if(t.getTransferStatusId()==1){ status="Pending";}
-            else if(t.getTransferStatusId()==2){ status="Approved";}
-            else if(t.getTransferStatusId()==3){ status="Rejected";}
-            else{status="Unknown";}
+//            if(t.getTransferStatusId()==1){ status="Pending";}
+//            else if(t.getTransferStatusId()==2){ status="Approved";}
+//            else if(t.getTransferStatusId()==3){ status="Rejected";}
+//            else{status="Unknown";}
 
             //sort transfers from sent and received
             if(t.getAccountFrom()==myAccountId){
@@ -131,7 +131,8 @@ public class TransferService {
                 //username=accountService.findUsernameFromAccountID(t.getAccountTo(),user);
                 username= usernameAndAccountIdMap.get(t.getAccountTo());
                 sbSent.append(String.format(headersFormat,
-                        status, t.getTransferId(),username,t.getAmount()));
+                        //status, t.getTransferId(),username,t.getAmount()));
+                        t.getTransferStatus().getTransferStatusDesc(), t.getTransferId(),username,t.getAmount()));
                 sbSent.append("\n");
             }
             else if(t.getAccountTo()==myAccountId){
@@ -139,7 +140,8 @@ public class TransferService {
                 //username=accountService.findUsernameFromAccountID(t.getAccountFrom(),user);
                 username=usernameAndAccountIdMap.get(t.getAccountFrom());
                 sbReceived.append(String.format(headersFormat,
-                        status, t.getTransferId(),username,t.getAmount()));
+//                        status, t.getTransferId(),username,t.getAmount()));
+                        t.getTransferStatus().getTransferStatusDesc(), t.getTransferId(),username,t.getAmount()));
                 sbReceived.append("\n");
             }
         }
@@ -178,8 +180,10 @@ public class TransferService {
                     t.getTransferId(),
                     t.getAccountFrom(),
                     t.getAccountTo(),
-                    t.getTransferStatusId(),
-                    t.getTransferTypeId(),
+//                    t.getTransferStatusId(),
+//                    t.getTransferTypeId(),
+                    t.getTransferStatus().getTransferStatusDesc(),
+                    t.getTransferType().getTransferTypeDesc(),
                     t.getAmount())));
 
             return string;
