@@ -69,6 +69,24 @@ public class ConsoleService {
             }
         }
     }
+    public boolean promptForBoolean(String prompt) {
+        System.out.print(prompt);
+        try {
+            while (true) {
+                String s= scanner.next();
+                if (s.equalsIgnoreCase("True")||s.equalsIgnoreCase("T")){
+                    return true;
+                }
+                if (s.equalsIgnoreCase("False")||s.equalsIgnoreCase("F")){
+                    return false;
+                }
+                System.out.println(prompt);
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return promptForBoolean(prompt);
+        }
+    }
 
     public BigDecimal promptForBigDecimal(String prompt) {
         System.out.print(prompt);

@@ -29,6 +29,7 @@ public class App {
             mainMenu();
         }
     }
+
     private void loginMenu() {
         int menuSelection = -1;
         while (menuSelection != 0 && currentUser == null) {
@@ -44,7 +45,6 @@ public class App {
             }
         }
     }
-
     //modified with try catch
     private void handleRegister() {
         try{
@@ -78,8 +78,10 @@ public class App {
                 viewCurrentBalance();
             } else if (menuSelection == 2) {
                 viewTransferHistory();
+                viewDetailedTransfer();
             } else if (menuSelection == 3) {
                 viewPendingRequests();
+                approveOrDenyTransfer();
             } else if (menuSelection == 4) {
                 sendBucks();
             } else if (menuSelection == 5) {
@@ -99,7 +101,7 @@ public class App {
 
 	private void viewTransferHistory() {
         System.out.println(transferService.getMyTransferHistoryAsFormattedString(currentUser));
-        viewDetailedTransfer();
+        //viewDetailedTransfer();
     }
 
     private void viewDetailedTransfer(){
@@ -107,7 +109,7 @@ public class App {
             int selection = consoleService.promptForInt("Enter a Transfer Id from the list above to view details or select 0 to continue");
             if (selection==0){return;}
             else{
-                System.out.println(transferService.getMyTransferDetails(currentUser, selection));
+                System.out.println(transferService.getTransferDetails(currentUser, selection));
             }
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -115,11 +117,24 @@ public class App {
         }
     }
 
-	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
-		
-	}
+    private void approveOrDenyTransfer(){
+        try {
+            int selection = consoleService.promptForInt("To APPROVE OR DENY, Enter a Transfer Id from the REQUESTS RECEIVED list above or select 0 to continue");
+            if (selection==0){return;}
+            else{
+                boolean TorF = consoleService.promptForBoolean("Please enter either True [Approve] or False [Deny]");
+                System.out.println(transferService.approveOrDenyTransfer(currentUser,selection,TorF));
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            //approveOrDenyTransfer();
+        }
+    }
 
+	private void viewPendingRequests() {
+        viewTransferHistory();
+        //approveOrDenyTransfer();
+    }
     //checks id isn't users own and id exists for send bucks
     private int getValidUserId(){
         //set to false if selection invalid
@@ -179,7 +194,7 @@ public class App {
 
         Transfer newTransfer = new Transfer(0,ts,tt,fromAccount,toAccount,selectedAmount);
         //post transfer!
-        Transfer returnedTransfer=transferService.postTransfer(currentUser,newTransfer);
+        System.out.println(transferService.postTransfer(currentUser,newTransfer));
         viewCurrentBalance();
 	}
 
@@ -200,9 +215,14 @@ public class App {
             }}
         while(!validSelection);
 
-
-
-
+        System.out.println(
+                transferService.postTransfer(currentUser,
+                new Transfer(0,
+                        new TransferStatus(1), // pending
+                        new TransferType(1), //request
+                        accountService.findAccountFromUserId(selectedUserId, currentUser),
+                        accountService.getMyAccount(currentUser),
+                        amount)));
 
 		// TODO Auto-generated method stub
 		

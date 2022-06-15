@@ -17,6 +17,7 @@ import java.security.Principal;
 @Transactional
 public class TransferService {
 //TODO ADD TRY CATCH
+    //todo add http responses
 
     private final TransferRepository transferRepository;
     private final AccountRepository accountRepository;
@@ -40,8 +41,8 @@ public class TransferService {
         else if(t.getTransferType().getTransferTypeId()==1){ //TYPE.REQUEST
 
             if (t.getTransferStatus().getTransferStatusId()==1){ return handleRequestPending(t); } // pending
-            else if(t.getTransferStatus().getTransferStatusId()==1){ return handleRequestApproved(t); } //approved
-            else if(t.getTransferStatus().getTransferStatusId()==2){ return handleRequestRejected(t); } // rejected
+            else if(t.getTransferStatus().getTransferStatusId()==2){ return handleRequestApproved(t); } //approved
+            else if(t.getTransferStatus().getTransferStatusId()==3){ return handleRequestRejected(t); } // rejected
 
             else return t;
         }
@@ -92,7 +93,7 @@ public class TransferService {
             System.out.println("HANDLE REQUEST APPROVED ERRR");
             return t;
         }
-        if(verifyTransfer.getTransferStatus()!=statusRepo.findByTransferStatusId(2)){
+        if(verifyTransfer.getTransferStatus()!=statusRepo.findByTransferStatusId(1)){
             System.out.println("ID MUST BE PENDING TO BE APPROVED"); return t;
         }
         if(!(verifyTransfer.getAccountFrom().equals(principalAccount))){  //accnt from must = principal accnt
@@ -111,7 +112,8 @@ public class TransferService {
 
     private Transfer handleRequestPending(Transfer t) { //1
 
-        if(t.getTransferId()!=0){return t;} //has to be 0 to initiate
+        if(t.getTransferId()!=0){
+            System.out.println("handleRequestPending() T_ID CANT EXIStS MUST BE 0");return t;} //has to be 0 to initiate
         if(!(t.getAccountTo().equals(principalAccount))) {
             System.out.println("handleResquestPending() ACCNT to has to be principal"); return t;}
         if(t.getAccountFrom().equals(principalAccount)){
