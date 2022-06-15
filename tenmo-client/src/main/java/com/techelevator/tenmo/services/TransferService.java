@@ -9,14 +9,16 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TransferService {
+
     private final String baseUrl;
     private final RestTemplate restTemplate = new RestTemplate();
     private final AccountService accountService;
 
-    private List<Transfer> myTransferHistory;
+    private List<Transfer> myTransferHistory=new ArrayList<>();
 
     public TransferService(String baseUrl, AccountService accountService) {
         this.baseUrl = baseUrl;
@@ -72,79 +74,88 @@ public class TransferService {
     public String getMyTransferHistoryAsFormattedString(AuthenticatedUser user){
         //get most recent list of transfers by user id
         setListOfTransfers(user);
-
+        try{
+            if(myTransferHistory.isEmpty())
+                return "NO TRANSFERS FOUND";
+        } catch (Exception e){
+            return "NO TRANSFERS FOUND";
+        }
         //build 2 strings for sent and received
         StringBuilder sbTransfersSent = new StringBuilder("\n");
         StringBuilder sbTransfersReceived = new StringBuilder("\n");
         StringBuilder sbRequestsSent = new StringBuilder("\n");
         StringBuilder sbRequestsReceived= new StringBuilder("\n");
-        StringBuilder line= new StringBuilder();
-        for (int i = 0; i < 63 ; i++) {
-            line.append("_");
+        StringBuilder line= new StringBuilder("|");
+        for (int i = 0; i < (52) ; i++) {
+            line.append("-");
         }
-        line.append("\n");
+        line.append("|\n");
 
-        sbTransfersSent.append(line);
-        sbTransfersReceived.append(line);
-        sbRequestsReceived.append(line);
-        sbRequestsSent.append(line);
+        sbTransfersSent.append((String.format("| %-50s |\n", "TRANSFERS SENT")));
+        sbTransfersReceived.append((String.format("| %-50s |\n", "TRANSFERS RECEIVED")));
+        sbRequestsReceived.append((String.format("| %-50s |\n", "REQUESTS RECEIVED")));
+        sbRequestsSent.append((String.format("| %-50s |\n", "REQUESTS SENT")));
 
-        sbTransfersSent.append((String.format("| %-59s |\n", "TRANSFERS SENT")));
-        sbTransfersReceived.append((String.format("| %-59s |\n", "TRANSFERS RECEIVED")));
-        sbRequestsReceived.append((String.format("| %-59s |\n", "REQUESTS RECEIVED")));
-        sbRequestsSent.append((String.format("| %-59s |\n", "REQUESTS SENT")));
+        String headersFormat= "| %-4s | %-7s | %-8s | %-9s | %-10s |";
 
-        String headersFormat= "| %-9s | %-8s | %-11s | %-9s | %-10s |";
+        String headers= String.format(headersFormat,"ID","TYPE", "STATUS","USER_TO","AMOUNT");
+        sbTransfersSent.append(line+headers+"\n"+line);
 
-        String headers= String.format(headersFormat,"TYPE", "STATUS","TRANSFER_ID","USER_TO","AMOUNT");
-        sbTransfersSent.append(headers+"\n");
+        headers= String.format(headersFormat,"ID","TYPE","STATUS","USER_FROM","AMOUNT");
+        sbTransfersReceived.append(line+headers+"\n"+line);
 
-        headers= String.format(headersFormat,"TYPE","STATUS","TRANSFER_ID","USER_FROM","AMOUNT");
-        sbTransfersReceived.append(headers+"\n");
+        headers= String.format(headersFormat,"ID","TYPE","STATUS","USER_TO","AMOUNT");
+        sbRequestsReceived.append(line+headers+"\n"+line);
 
-        headers= String.format(headersFormat,"TYPE","STATUS","TRANSFER_ID","USER_TO","AMOUNT");
-        sbRequestsReceived.append(headers+"\n");
-
-        headers= String.format(headersFormat,"TYPE","STATUS","TRANSFER_ID","USER_FROM","AMOUNT");
-        sbRequestsSent.append(headers+"\n");
-
-        sbTransfersSent.append(line);
-        sbTransfersReceived.append(line);
-        sbRequestsSent.append(line);
-        sbRequestsReceived.append(line);
+        headers= String.format(headersFormat,"ID","TYPE","STATUS","USER_FROM","AMOUNT");
+        sbRequestsSent.append(line+headers+"\n"+line);
 
         int myAccountId= accountService.getMyAccount(user).getAccountId();
 
-        String username;
         for(Transfer t: myTransferHistory) {
-            username = "NOT FOUND";
-            if (t.getTransferType().getTransferTypeId() == 2) { //TYPE:SEND
 
-                if (t.getAccountFrom().getAccountId() == myAccountId) { //OUTGOING TRANSFERS
-                    username = t.getAccountTo().getUser().getUsername();
-                    sbTransfersSent.append(String.format(headersFormat,
-                            t.getTransferType().getTransferTypeDesc(),t.getTransferStatus().getTransferStatusDesc(), t.getTransferId(), username, t.getAmount()));
-                    sbTransfersSent.append("\n");
-                } else if (t.getAccountTo().getAccountId() == myAccountId) {   //incoming
-                    username = t.getAccountFrom().getUser().getUsername();
+            int acc_from_id=t.getAccountFrom().getAccountId();
+            int acc_to_id=t.getAccountTo().getAccountId();
+            int type_id=t.getTransferType().getTransferTypeId();
+            String acc_to_username = t.getAccountTo().getUser().getUsername();
+            String acc_from_username = t.getAccountFrom().getUser().getUsername();
+
+            if (type_id == 2) { //TYPE:SEND
+
+                if (acc_from_id == myAccountId) { //OUTGOING TRANSFERS
+                    sbTransfersSent.append( String.format (headersFormat,
+                            t.getTransferId(),
+                            t.getTransferType().getTransferTypeDesc(),
+                            t.getTransferStatus().getTransferStatusDesc(),
+                            acc_to_username,
+                            t.getAmount())+ "\n");
+
+                } else if (acc_to_id == myAccountId) {   //incoming
                     sbTransfersReceived.append(String.format(headersFormat,
-                            t.getTransferType().getTransferTypeDesc(),t.getTransferStatus().getTransferStatusDesc(), t.getTransferId(), username, t.getAmount()));
-                    sbTransfersReceived.append("\n");
+                            t.getTransferId(),
+                            t.getTransferType().getTransferTypeDesc(),
+                            t.getTransferStatus().getTransferStatusDesc(),
+                            acc_from_username,
+                            t.getAmount())+ "\n");
                 }
             }
-            if (t.getTransferType().getTransferTypeId() == 1) { //TYPE:REQUEST
-
-                if (t.getAccountFrom().getAccountId() == myAccountId) { // INCOMING REQUESTS
-                    username = t.getAccountTo().getUser().getUsername();
+            if (type_id == 1) { //TYPE:REQUEST
+                if (acc_from_id == myAccountId) { // INCOMING REQUESTS
                     sbRequestsReceived.append(String.format(headersFormat,
-                            t.getTransferType().getTransferTypeDesc(),t.getTransferStatus().getTransferStatusDesc(), t.getTransferId(), username, t.getAmount()));
-                    sbRequestsReceived.append("\n");
-                } else if (t.getAccountTo().getAccountId() == myAccountId) {   // REQUEST SENT
-                    username = t.getAccountFrom().getUser().getUsername();
+                            t.getTransferId(),
+                            t.getTransferType().getTransferTypeDesc(),
+                            t.getTransferStatus().getTransferStatusDesc(),
+                            acc_to_username,
+                            t.getAmount())+"\n");
+
+                } else if (acc_to_id == myAccountId) {   // REQUEST SENT
                     sbRequestsSent.append(String.format(headersFormat,
-                            t.getTransferType().getTransferTypeDesc(),t.getTransferStatus().getTransferStatusDesc(), t.getTransferId(), username, t.getAmount()));
-                    sbRequestsSent.append("\n");
-                }
+                            t.getTransferId(),
+                            t.getTransferType().getTransferTypeDesc(),
+                            t.getTransferStatus().getTransferStatusDesc(),
+                            acc_from_username,
+                            t.getAmount())+"\n");
+                    }
             }
         }
         sbTransfersReceived.append(line);
@@ -214,11 +225,15 @@ public class TransferService {
         }
 
     private Transfer getTransferFromMyTransfersUsingTransferID (AuthenticatedUser user,int id){
-        setListOfTransfers(user);
-        for (Transfer t : myTransferHistory) {
-            if (t.getTransferId() == id) {
-                return t;
+        try{
+            setListOfTransfers(user);
+            for (Transfer t : myTransferHistory) {
+                if (t.getTransferId() == id) {
+                    return t;
+                }
             }
+        }catch (Exception e){
+            return null;
         }
         return null;
     }

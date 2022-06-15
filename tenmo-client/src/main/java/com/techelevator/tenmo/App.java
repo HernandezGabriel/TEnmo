@@ -10,7 +10,6 @@ public class App {
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
 
-    //Added
     private final AccountService accountService = new AccountService(API_BASE_URL);
     private final UserService userService = new UserService(API_BASE_URL);
     private final TransferService transferService = new TransferService(API_BASE_URL, accountService);
@@ -57,16 +56,22 @@ public class App {
             }
         }catch (Exception e){
             System.out.println("ERROR: Account not created");
-            handleRegister();
         }
     }
 
     private void handleLogin() {
         UserCredentials credentials = consoleService.promptForCredentials();
-        currentUser = authenticationService.login(credentials);
-        if (currentUser == null) {
-            consoleService.printErrorMessage();
+        try {
+            currentUser = authenticationService.login(credentials);
+            if (currentUser == null) {
+                consoleService.printErrorMessage();
+                handleLogin();
+            }
         }
+        catch (Exception e){
+            System.out.println("ERROR LOGGING IN");
+        }
+
     }
 
     private void mainMenu() {
@@ -82,8 +87,10 @@ public class App {
             } else if (menuSelection == 3) {
                 viewPendingRequests();
                 approveOrDenyTransfer();
+                viewCurrentBalance();
             } else if (menuSelection == 4) {
                 sendBucks();
+                viewCurrentBalance();
             } else if (menuSelection == 5) {
                 requestBucks();
             } else if (menuSelection == 0) {
@@ -95,11 +102,11 @@ public class App {
         }
     }
 
-	private void viewCurrentBalance() {
+    private void viewCurrentBalance() {
         System.out.println("Your Current Balance is : " + accountService.getMyBalance(currentUser));
-	}
+    }
 
-	private void viewTransferHistory() {
+    private void viewTransferHistory() {
         System.out.println(transferService.getMyTransferHistoryAsFormattedString(currentUser));
         //viewDetailedTransfer();
     }
@@ -117,6 +124,11 @@ public class App {
         }
     }
 
+	private void viewPendingRequests() {
+        viewTransferHistory();
+        //approveOrDenyTransfer();
+    }
+
     private void approveOrDenyTransfer(){
         try {
             int selection = consoleService.promptForInt("To APPROVE OR DENY, Enter a Transfer Id from the REQUESTS RECEIVED list above or select 0 to continue");
@@ -131,9 +143,24 @@ public class App {
         }
     }
 
-	private void viewPendingRequests() {
-        viewTransferHistory();
-        //approveOrDenyTransfer();
+    private void sendBucks() {
+
+        // display list of users
+        System.out.println(userService.getListOfUsersAsString(currentUser));
+
+        //prompt for user input
+        int selectedUserId = getValidUserId();
+        long selectedAmount = getValidAmount();
+
+        Account fromAccount = accountService.getMyAccount(currentUser);
+        Account toAccount = accountService.findAccountFromUserId(selectedUserId,currentUser);
+        TransferStatus ts = new TransferStatus(1);//pending
+        TransferType tt = new TransferType(2); //send
+
+        Transfer newTransfer = new Transfer(0,ts,tt,fromAccount,toAccount,selectedAmount);
+        //post transfer!
+        System.out.println(transferService.postTransfer(currentUser,newTransfer));
+        viewCurrentBalance();
     }
     //checks id isn't users own and id exists for send bucks
     private int getValidUserId(){
@@ -178,26 +205,6 @@ public class App {
         return amount;
     }
 
-	private void sendBucks() {
-
-        // display list of users
-        System.out.println(userService.getListOfUsersAsString(currentUser));
-
-        //prompt for user input
-        int selectedUserId = getValidUserId();
-        long selectedAmount = getValidAmount();
-
-        Account fromAccount = accountService.getMyAccount(currentUser);
-        Account toAccount = accountService.findAccountFromUserId(selectedUserId,currentUser);
-        TransferStatus ts = new TransferStatus(1);//pending
-        TransferType tt = new TransferType(2); //send
-
-        Transfer newTransfer = new Transfer(0,ts,tt,fromAccount,toAccount,selectedAmount);
-        //post transfer!
-        System.out.println(transferService.postTransfer(currentUser,newTransfer));
-        viewCurrentBalance();
-	}
-
     private void requestBucks() {
         //display users
         System.out.println(userService.getListOfUsersAsString(currentUser));
@@ -217,18 +224,18 @@ public class App {
 
         System.out.println(
                 transferService.postTransfer(currentUser,
-                new Transfer(0,
-                        new TransferStatus(1), // pending
-                        new TransferType(1), //request
-                        accountService.findAccountFromUserId(selectedUserId, currentUser),
-                        accountService.getMyAccount(currentUser),
-                        amount)));
+                        new Transfer(0,
+                                new TransferStatus(1), // pending
+                                new TransferType(1), //request
+                                accountService.findAccountFromUserId(selectedUserId, currentUser),
+                                accountService.getMyAccount(currentUser),
+                                amount)));
 
-		// TODO Auto-generated method stub
-		
-	}
+        // TODO Auto-generated method stub
 
-    
+    }
+
+
 
 
 
