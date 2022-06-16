@@ -31,7 +31,7 @@ public class TransferController {
     }
 
     @PostMapping("/InitTransfer")
-    //@ResponseStatus(HttpStatus.CREATED)
+    
     public ResponseEntity<Transfer> createTransfer(@Valid @RequestBody Transfer transfer, Principal p){
         Transfer newT=null;
         try{
@@ -42,17 +42,9 @@ public class TransferController {
             }
             return new ResponseEntity<>(newT,HttpStatus.CREATED);
         }catch (Exception e){
-            try{
-                newT=transferRepository.findByTransferId(newT.getTransferId());
-
-                if(newT.equals(null)){
-                    return new ResponseEntity<>(transfer,HttpStatus.BAD_REQUEST);
-                }
-                return new ResponseEntity<>(newT, HttpStatus.PARTIAL_CONTENT);
-            }catch (Exception e2){
                 return new ResponseEntity<>(transfer, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
         }
+
     }
 
     @GetMapping("/MyTransfers")

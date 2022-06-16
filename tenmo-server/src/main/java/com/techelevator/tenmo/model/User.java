@@ -111,17 +111,6 @@ public class User {
       return Objects.hash(userId, username, password, activated, authorities);
    }
 
-//   @Override
-//   public String toString() {
-//      return "User{" +
-//              "Userid=" + id +
-//              ", username='" + username + '\'' +
-//              ", activated=" + activated +
-//              ", authorities=" + authorities +
-//              '}';
-//   }
-
-
    @Override
    public String toString() {
       return "User{" +

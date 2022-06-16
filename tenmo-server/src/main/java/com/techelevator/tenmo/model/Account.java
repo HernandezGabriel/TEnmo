@@ -16,6 +16,7 @@ public class Account {
     @OneToOne
     @JoinColumn(nullable = false, name = "user_id")
     User user;
+
     @NotNull(message = "balance cannot be negative or empty")
     long balance;
 
@@ -54,7 +55,6 @@ public class Account {
     }
 
     public String getUsername(){return user.getUsername();}
-
 
     public User getUser() {
         return user;

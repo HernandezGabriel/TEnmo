@@ -18,6 +18,10 @@ public class TransferType {
     @NotEmpty
     String transferTypeDesc;
 
+    public void setTransferTypeDesc(String transferTypeDesc) {
+        this.transferTypeDesc = transferTypeDesc;
+    }
+
     public TransferType(int transferTypeId, String transferTypeDesc) {
         this.transferTypeId = transferTypeId;
         this.transferTypeDesc = transferTypeDesc;
@@ -27,19 +31,15 @@ public class TransferType {
         return transferTypeId;
     }
 
+    public TransferType() {
+    }
+
     public void setTransferTypeId(int transferTypeId) {
         this.transferTypeId = transferTypeId;
     }
 
     public String getTransferTypeDesc() {
         return transferTypeDesc;
-    }
-
-    public void setTransferTypeDesc(String transferTypeDesc) {
-        this.transferTypeDesc = transferTypeDesc;
-    }
-
-    public TransferType() {
     }
 
     @Override

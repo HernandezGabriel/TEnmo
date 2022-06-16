@@ -16,7 +16,7 @@ import java.security.Principal;
 @Service
 @Transactional
 public class TransferService {
-//TODO ADD TRY CATCH
+//TODO ADD TRY CATCH -> throw http status exceptions
     //todo add http responses
 
     private final TransferRepository transferRepository;
@@ -53,7 +53,7 @@ public class TransferService {
 
         if(t.getTransferType().getTransferTypeId()!=2){ return t; } //type of 2
         if(t.getTransferId()!=0){ return t; } //id has to be 0 to start
-        if(!t.getAccountFrom().equals(principalAccount)){ return t; } //accnt from = principal
+        if(!t.getAccountFrom().equals(principalAccount)){ return t; } //account from = principal
         if(principalAccount.getBalance()<t.getAmount()){ return t; } //then check balance
         else { //transfer funds
             //GO TO
@@ -78,28 +78,28 @@ public class TransferService {
         if(verificationTransfer.getAccountFrom()!=principalAccount){         //verify that account FROM is principal
             System.out.println("NOT YR ACCOUNT ERROR"); return t; }
         //post transaction?
-        else{
-            t.setTransferStatus(statusRepo.findByTransferStatusId(3)); //rejected
-        }
-        return         transferRepository.save(t);
+//        else{
+//            t.setTransferStatus(statusRepo.findByTransferStatusId(3)); //rejected
+//        }
+        return transferRepository.save(t);
     }
 
-    private Transfer handleRequestApproved(Transfer t) { //2
-        //gets transfer from db via id
+    private Transfer handleRequestApproved(Transfer t) {
+        //2 gets transfer from db via id
         Transfer verifyTransfer;
         try{
             verifyTransfer = transferRepository.findByTransferId(t.getTransferId());
         }catch (Exception e){
-            System.out.println("HANDLE REQUEST APPROVED ERRR");
+            System.out.println("HANDLE REQUEST APPROVED ERROR");
             return t;
         }
         if(verifyTransfer.getTransferStatus()!=statusRepo.findByTransferStatusId(1)){
             System.out.println("ID MUST BE PENDING TO BE APPROVED"); return t;
         }
-        if(!(verifyTransfer.getAccountFrom().equals(principalAccount))){  //accnt from must = principal accnt
-            System.out.println("handleRequestApproveERROR account from must be principal acount");return t;
+        if(!(verifyTransfer.getAccountFrom().equals(principalAccount))){  //account from must = principal account
+            System.out.println("handleRequestApproveERROR account from must be principal account");return t;
         }
-        if(verifyTransfer.getAccountTo().equals(principalAccount)){ //accnt to cant be yours if youre approving a transfer
+        if(verifyTransfer.getAccountTo().equals(principalAccount)){ //account to can't be yours if you're approving a transfer
             System.out.println("account to cant be yours when approving transfer"); return t;
         }
         if(accountRepository.findBalanceByAccountId(principalAccount.getAccountId())<verifyTransfer.getAmount()){
@@ -115,16 +115,17 @@ public class TransferService {
         if(t.getTransferId()!=0){
             System.out.println("handleRequestPending() T_ID CANT EXIStS MUST BE 0");return t;} //has to be 0 to initiate
         if(!(t.getAccountTo().equals(principalAccount))) {
-            System.out.println("handleResquestPending() ACCNT to has to be principal"); return t;}
+            System.out.println("handleRequestPending() ACCOUNT to has to be principal"); return t;}
         if(t.getAccountFrom().equals(principalAccount)){
-            System.out.println("Accnt FROM CANT BE PRINCIPAL ACCNT/ cant request money from self");  return t;}
+            System.out.println("Account FROM CANT BE PRINCIPAL ACCOUNT/ cant request money from self");  return t;}
 
-        t.setTransferStatus(statusRepo.findByTransferStatusId(1)); //1 for pending
+        //t.setTransferStatus(statusRepo.findByTransferStatusId(1)); //1 for pending
         //note no funds being transferred
         return transferRepository.save(t);
     }
 
     private Transfer transferMoney(Transfer t) {
+
             long senderBalance= accountRepository.findBalanceByAccountId(t.getAccountFrom().getAccountId());
             long receiverBalance= accountRepository.findBalanceByAccountId(t.getAccountTo().getAccountId());
 

@@ -14,7 +14,7 @@ public class Transfer {
     @OneToOne
     @JoinColumn(name = "transfer_status_id", nullable = false)
     TransferStatus transferStatus;
-    //int transferTypeId;
+
     @NotNull
     @OneToOne
     @JoinColumn(name = "transfer_type_id", nullable = false)
@@ -27,8 +27,7 @@ public class Transfer {
 
     @NotNull
     @OneToOne
- @JoinColumn(nullable = false, name="account_to" )
-   // @PrimaryKeyJoinColumn
+    @JoinColumn(nullable = false, name="account_to" )
     Account accountTo;
 
     @NotNull
