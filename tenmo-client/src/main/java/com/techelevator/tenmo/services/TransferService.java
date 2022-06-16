@@ -192,13 +192,9 @@ public class TransferService {
             else if(!approve){
                 t.setTransferStatus(new TransferStatus(3)); //3 = DENIED
             }
-
             return postTransfer(user,t).toString();
-
         }
-//        return ;
-
-    }
+   }
 
     public String getTransferDetails(AuthenticatedUser user, int transferId){
             Transfer t = getTransferFromMyTransfersUsingTransferID(user, transferId);

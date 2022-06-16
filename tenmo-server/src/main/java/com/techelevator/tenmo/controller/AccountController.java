@@ -39,6 +39,7 @@ public class AccountController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/MyBalance")
     public ResponseEntity<Long> getMyBalance(Principal principal){
         try {
@@ -53,6 +54,7 @@ public class AccountController {
 //        return accountRepository.findAccountByUsername(principal.getName()).getBalance();
 
     }
+
     @GetMapping("/Account")  //"/AccountId?userId=1002
     public ResponseEntity<Account> getAccountFromUserId(@RequestParam int userId){
         try {

@@ -7,6 +7,8 @@ import com.techelevator.tenmo.dao.TransferTypeRepository;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,9 +35,9 @@ public class TransferService {
         this.accountRepository = accountRepository;
     }
 
-    public Transfer handleTransfer(@Valid Transfer t, Principal p){
+    public ResponseEntity<Transfer> handleTransfer(@Valid Transfer t, Principal p){
         principalAccount = accountRepository.findAccountByUsername(p.getName());            //set principle account
-        if(t.getAmount()<=0){return t;}         //if amount less than 0 return
+        if(t.getAmount()<=0){return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);}         //if amount less than 0 return
 
         if(t.getTransferType().getTransferTypeId()==2){ return handleSend(t); } //TYPE: SEND
         else if(t.getTransferType().getTransferTypeId()==1){ //TYPE.REQUEST
@@ -44,25 +46,27 @@ public class TransferService {
             else if(t.getTransferStatus().getTransferStatusId()==2){ return handleRequestApproved(t); } //approved
             else if(t.getTransferStatus().getTransferStatusId()==3){ return handleRequestRejected(t); } // rejected
 
-            else return t;
+            else return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);
         }
-        else return t;
+        else return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);
     }
 
-    private Transfer handleSend(Transfer t){
+    private ResponseEntity<Transfer> handleSend(Transfer t){
 
-        if(t.getTransferType().getTransferTypeId()!=2){ return t; } //type of 2
-        if(t.getTransferId()!=0){ return t; } //id has to be 0 to start
-        if(!t.getAccountFrom().equals(principalAccount)){ return t; } //account from = principal
-        if(principalAccount.getBalance()<t.getAmount()){ return t; } //then check balance
+        if(t.getTransferType().getTransferTypeId()!=2){ return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);} //type of 2
+        if(t.getTransferId()!=0){ return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST); } //id has to be 0 to start
+        if(!t.getAccountFrom().equals(principalAccount)){ return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST); } //account from = principal
+        if(principalAccount.getBalance()<t.getAmount()){ return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST); } //then check balance
         else { //transfer funds
             //GO TO
+
+            t.setTransferType(typeRepo.findByTransferTypeId(2)); //type: send
             return transferMoney(t);
         }
 
     }
 
-    private Transfer handleRequestRejected(Transfer t) {
+    private ResponseEntity<Transfer> handleRequestRejected(Transfer t) {
 
         // denied
         //if transfer has a request and denied then you are trying to deny a pending request so
@@ -71,60 +75,64 @@ public class TransferService {
         try{
             verificationTransfer = transferRepository.findByTransferId(t.getTransferId());
         }catch (Exception e){
-            return t;
+            return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);
         }
         if(verificationTransfer.getTransferStatus()!=statusRepo.findByTransferStatusId(1)){
-            System.out.println("TS NOT PENDING! ERROR");return t;} //HAS TO BE PENDING
+            System.out.println("TS NOT PENDING! ERROR");return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);} //HAS TO BE PENDING
         if(verificationTransfer.getAccountFrom()!=principalAccount){         //verify that account FROM is principal
-            System.out.println("NOT YR ACCOUNT ERROR"); return t; }
+            System.out.println("NOT YR ACCOUNT ERROR"); return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST); }
         //post transaction?
-//        else{
-//            t.setTransferStatus(statusRepo.findByTransferStatusId(3)); //rejected
-//        }
-        return transferRepository.save(t);
+        else{
+            t.setTransferStatus(statusRepo.findByTransferStatusId(3)); //rejected
+            t.setTransferType(typeRepo.findByTransferTypeId(1)); //request
+        }
+        return new ResponseEntity<>(transferRepository.save(t), HttpStatus.CREATED);
     }
 
-    private Transfer handleRequestApproved(Transfer t) {
+    private ResponseEntity<Transfer> handleRequestApproved(Transfer t) {
         //2 gets transfer from db via id
         Transfer verifyTransfer;
         try{
             verifyTransfer = transferRepository.findByTransferId(t.getTransferId());
         }catch (Exception e){
             System.out.println("HANDLE REQUEST APPROVED ERROR");
-            return t;
+            return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);
         }
         if(verifyTransfer.getTransferStatus()!=statusRepo.findByTransferStatusId(1)){
-            System.out.println("ID MUST BE PENDING TO BE APPROVED"); return t;
+            System.out.println("ID MUST BE PENDING TO BE APPROVED"); return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);
         }
         if(!(verifyTransfer.getAccountFrom().equals(principalAccount))){  //account from must = principal account
-            System.out.println("handleRequestApproveERROR account from must be principal account");return t;
+            System.out.println("handleRequestApproveERROR account from must be principal account");return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);
         }
         if(verifyTransfer.getAccountTo().equals(principalAccount)){ //account to can't be yours if you're approving a transfer
-            System.out.println("account to cant be yours when approving transfer"); return t;
+            System.out.println("account to cant be yours when approving transfer"); return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);
         }
         if(accountRepository.findBalanceByAccountId(principalAccount.getAccountId())<verifyTransfer.getAmount()){
-            System.out.println("not enough funds");return t;
+            System.out.println("not enough funds");return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);
         }
+//        t.setTransferStatus(statusRepo.findByTransferStatusId(2));
+        t.setTransferType(typeRepo.findByTransferTypeId(1)); //request
 
         return transferMoney(t);
 
     }
 
-    private Transfer handleRequestPending(Transfer t) { //1
+    private ResponseEntity<Transfer> handleRequestPending(Transfer t) { //1
 
         if(t.getTransferId()!=0){
-            System.out.println("handleRequestPending() T_ID CANT EXIStS MUST BE 0");return t;} //has to be 0 to initiate
+            System.out.println("handleRequestPending() T_ID CANT EXIStS MUST BE 0");return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);} //has to be 0 to initiate
         if(!(t.getAccountTo().equals(principalAccount))) {
-            System.out.println("handleRequestPending() ACCOUNT to has to be principal"); return t;}
+            System.out.println("handleRequestPending() ACCOUNT to has to be principal"); return new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);}
         if(t.getAccountFrom().equals(principalAccount)){
-            System.out.println("Account FROM CANT BE PRINCIPAL ACCOUNT/ cant request money from self");  return t;}
+            System.out.println("Account FROM CANT BE PRINCIPAL ACCOUNT/ cant request money from self");  new ResponseEntity<>(t, HttpStatus.BAD_REQUEST);}
 
-        //t.setTransferStatus(statusRepo.findByTransferStatusId(1)); //1 for pending
+        t.setTransferStatus(statusRepo.findByTransferStatusId(1)); //1 for pending
+        t.setTransferType(typeRepo.findByTransferTypeId(1)); // request
         //note no funds being transferred
-        return transferRepository.save(t);
+        return new ResponseEntity<>(transferRepository.save(t), HttpStatus.CREATED);
     }
 
-    private Transfer transferMoney(Transfer t) {
+    private ResponseEntity<Transfer> transferMoney(Transfer t) {
 
             long senderBalance= accountRepository.findBalanceByAccountId(t.getAccountFrom().getAccountId());
             long receiverBalance= accountRepository.findBalanceByAccountId(t.getAccountTo().getAccountId());
@@ -134,10 +142,12 @@ public class TransferService {
 
             accountRepository.changeAmount( senderNewAmount,t.getAccountFrom().getAccountId());
             accountRepository.changeAmount( receiverNewAmount, t.getAccountTo().getAccountId());
-            t.setTransferStatus(statusRepo.findByTransferStatusId(2));
+
+            t.setTransferStatus(statusRepo.findByTransferStatusId(2)); //status = approved
+            //t.setTransferType(typeRepo.findByTransferTypeId(2)); //type = send
             t=transferRepository.save(t);
 
-        return t;
+        return new ResponseEntity<>(t, HttpStatus.CREATED);
 
     }
 }

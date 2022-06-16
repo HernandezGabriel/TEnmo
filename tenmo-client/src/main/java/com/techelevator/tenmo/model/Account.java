@@ -5,16 +5,12 @@ public class Account {
     int accountId;
     User user;
 
-    //omitted to avoid getting the info from server
-    //long balance;
-
     public Account() {
     }
 
-    public Account(int accountId, User user){ //, long balance) {
+    public Account(int accountId, User user){
         this.accountId = accountId;
         this.user=user;
-        //this.balance = balance ;
     }
 
     public int getAccountId() {
@@ -32,14 +28,6 @@ public class Account {
     public void setUser(User user) {
         this.user = user;
     }
-
-//    public long getBalance() {
-//        return balance;
-//    }
-//
-//    public void setBalance(long balance) {
-//        this.balance = balance;
-//    }
 
     @Override
     public String toString() {

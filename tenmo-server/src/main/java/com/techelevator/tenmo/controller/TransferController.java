@@ -31,16 +31,10 @@ public class TransferController {
     }
 
     @PostMapping("/InitTransfer")
-    
     public ResponseEntity<Transfer> createTransfer(@Valid @RequestBody Transfer transfer, Principal p){
         Transfer newT=null;
         try{
-            newT = transferService.handleTransfer(transfer , p);
-            newT = transferRepository.findByTransferId(newT.getTransferId());
-            if(newT.equals(null)){
-                return new ResponseEntity<>(transfer,HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<>(newT,HttpStatus.CREATED);
+            return transferService.handleTransfer(transfer,p);
         }catch (Exception e){
                 return new ResponseEntity<>(transfer, HttpStatus.INTERNAL_SERVER_ERROR);
         }
