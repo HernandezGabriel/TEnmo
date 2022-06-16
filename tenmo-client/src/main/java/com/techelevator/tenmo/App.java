@@ -22,6 +22,8 @@ public class App {
     }
 
     private void run() {
+//        BasicLogger.log("APP RUNNING");
+
         consoleService.printGreeting();
         loginMenu();
         if (currentUser != null) {
