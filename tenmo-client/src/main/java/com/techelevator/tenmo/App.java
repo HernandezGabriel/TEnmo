@@ -115,6 +115,7 @@ public class App {
 
     private void viewDetailedTransfer(){
         try {
+
             int selection = consoleService.promptForInt("Enter a Transfer Id from the list above to view details or select 0 to continue");
             if (selection==0){return;}
             else{
@@ -122,23 +123,21 @@ public class App {
             }
         }catch (Exception e){
             System.out.println(e.getMessage());
-            viewDetailedTransfer();
         }
     }
 
 	private void viewPendingRequests() {
-        //TODO
         viewTransferHistory();
         //approveOrDenyTransfer();
     }
 
     private void approveOrDenyTransfer(){
         try {
-            int selection = consoleService.promptForInt("To APPROVE OR DENY, Enter a Transfer Id from the REQUESTS RECEIVED list above or select 0 to continue");
+            int selection = consoleService.promptForInt("To APPROVE OR DENY, enter a an ID from REQUESTS RECEIVED\nOr enter 0 to continue");
             if (selection==0){return;}
             else{
                 boolean TorF = consoleService.promptForBoolean("Please enter either True [Approve] or False [Deny]");
-                System.out.println(transferService.approveOrDenyTransfer(currentUser,selection,TorF));
+                System.out.println("\n"+transferService.approveOrDenyTransfer(currentUser,selection,TorF)+"\n");
             }
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -162,8 +161,8 @@ public class App {
 
         Transfer newTransfer = new Transfer(0,ts,tt,fromAccount,toAccount,selectedAmount);
         //post transfer!
-        System.out.println(transferService.postTransfer(currentUser,newTransfer));
-        viewCurrentBalance();
+        System.out.println("\n"+transferService.postTransfer(currentUser,newTransfer)+"\n");
+
     }
     //checks id isn't users own and id exists for send bucks
     private int getValidUserId(){
@@ -197,11 +196,14 @@ public class App {
             if(amount<=0){
                 validSelection=false;
                 System.out.println("Amount cannot be 0 or negative");
+
             }
-            //check for enough funds
-            if(!accountService.hasEnoughFunds(amount, currentUser)){
-                validSelection=false;
-                System.out.println("Insufficient funds");
+           //check for enough funds
+            if(validSelection==true){
+                if(!accountService.hasEnoughFunds(amount, currentUser)){
+                    validSelection=false;
+                    System.out.println("Insufficient funds");
+                }
             }
         }while(!validSelection);
 
@@ -225,14 +227,14 @@ public class App {
             }}
         while(!validSelection);
 
-        System.out.println(
+        System.out.println("\n"+
                 transferService.postTransfer(currentUser,
                         new Transfer(0,
                                 new TransferStatus(1), // pending
                                 new TransferType(1), //request
                                 accountService.findAccountFromUserId(selectedUserId, currentUser),
                                 accountService.getMyAccount(currentUser),
-                                amount)));
+                                amount)) +"\n" ) ;
 
         // TODO Auto-generated method stub
 

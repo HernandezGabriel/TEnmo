@@ -66,6 +66,8 @@ public class TransferService {
 
     }
 
+
+
     private ResponseEntity<Transfer> handleRequestRejected(Transfer t) {
 
         // denied
@@ -131,6 +133,9 @@ public class TransferService {
         //note no funds being transferred
         return new ResponseEntity<>(transferRepository.save(t), HttpStatus.CREATED);
     }
+
+
+
 
     private ResponseEntity<Transfer> transferMoney(Transfer t) {
 

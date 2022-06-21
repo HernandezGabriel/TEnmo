@@ -15,7 +15,7 @@ public class BasicLogger {
 		try {
 			if (pw == null) {
 //				String logFilename = "logs/" + LocalDate.now().format(DateTimeFormatter.ISO_DATE) + ".log";
-				String logFilename = "tenmo-client\\logs\\" + LocalDate.now().format(DateTimeFormatter.ISO_DATE) + ".log";
+				String logFilename = "tenmo-client/logs/" + LocalDate.now().format(DateTimeFormatter.ISO_DATE) + ".log";
 				pw = new PrintWriter(new FileOutputStream(logFilename, true));
 			}
 			pw.println(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + " " + message);
