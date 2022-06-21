@@ -30,6 +30,8 @@ public class TransferController {
         this.transferService = transferService;
     }
 
+    //Uses TransferService CLASS to handle initializing of all transfers
+    //endpoint for "InitTransfer
     @PostMapping("/InitTransfer")
     public ResponseEntity<Transfer> createTransfer(@Valid @RequestBody Transfer transfer, Principal p){
         Transfer newT=null;
@@ -41,6 +43,11 @@ public class TransferController {
 
     }
 
+
+    //Uses transfer repo to return a list<transfer>
+    //uses principal to make sure you are only receiving your transfers
+    //Note: A Transfer obj will contain several others objects including 2 account objects which each will contain a user object
+    //also a type and status object
     @GetMapping("/MyTransfers")
     public ResponseEntity<List<Transfer>> getMyTransfers(Principal principal){
         try{

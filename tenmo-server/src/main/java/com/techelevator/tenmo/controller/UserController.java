@@ -23,6 +23,8 @@ public class UserController {
     @Autowired
     private AccountRepository accountRepository;
 
+    //Returns a list<user> in DB using the UserDao
+    //Note: only returns two fields: id and username, other members not returned
     @GetMapping("/Users")
     public ResponseEntity<List<User>> listUsers(){
         try {

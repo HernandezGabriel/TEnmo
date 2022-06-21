@@ -24,7 +24,9 @@ public class UserService {
         this.baseUrl = baseUrl;
     }
 
-
+    //Creates headers with token
+    //Uses restTemplate.exchange to retrieve List<users> (id & username)
+    //Sets userList member to response
     private void setListOfUsers(AuthenticatedUser user){
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(user.getToken());
@@ -40,11 +42,12 @@ public class UserService {
         }catch (RestClientResponseException | ResourceAccessException e){
             BasicLogger.log(e.getMessage());
         }
-
     }
 
+    //updates userList member
+    //returns formatted string of list
     public String getListOfUsersAsString(AuthenticatedUser user){
-        //getting the most updated list of users
+
         setListOfUsers(user);
 
         StringBuilder sb = new StringBuilder();
@@ -56,6 +59,7 @@ public class UserService {
         return sb.toString();
     }
 
+    //checks list for id and returns boolean
     public boolean idExists(int id){
         for(User u: usersList){
             if(u.getUserId()== id){
@@ -65,6 +69,7 @@ public class UserService {
         return false;
     }
 
+    //returns username by id from list or null if id doesn't exist
     public String getUsernameById(int id){
         for(User u : usersList){
             if(u.getUserId()==(id)){

@@ -25,6 +25,11 @@ public class TransferService {
         this.accountService = accountService;
     }
 
+    //Accepts a transfer, method is called after various checks have been performed on the client side
+    //Uses RestTemplate.Exchange to retrieve the new Transfer if successful
+    //accepts all types of transfer
+    //Creates Headers with token and transfer object for exchange method
+    //Returns updated transfer
     public Transfer postTransfer(AuthenticatedUser user, Transfer transfer){
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(user.getToken());
@@ -32,28 +37,24 @@ public class TransferService {
         HttpEntity<Transfer> entity = new HttpEntity<>(transfer,headers);
 
         Transfer returnedTransfer = null;
-        boolean success=false;
         try{
             ResponseEntity<Transfer> response =
                     restTemplate.exchange(baseUrl+"InitTransfer", HttpMethod.POST, entity, Transfer.class );
 
             returnedTransfer = response.getBody();
-
-            if(returnedTransfer.getTransferId()!=0){
-
-                success=true;
-            }else{
-                System.out.println("SUCCESS = false");
-                System.out.println(returnedTransfer);
-            }
+            if(returnedTransfer.getTransferId()==0)
+                System.out.println("Something went wrong");
         }catch (RestClientResponseException | ResourceAccessException e){
-            //BasicLogger.log(e.getMessage());
+//            BasicLogger.log(e.getMessage());
             System.out.println(e.getMessage());
         }
-
         return returnedTransfer;
     }
 
+    //creates http headers with token
+    //uses RestTemplate.Exchange to get a List of Transfer where 'my' user is present
+    //Sets response to myTransferHistory member of class
+    //called by several members of this class to retrieve updated list of my transfers
     private void setListOfTransfers(AuthenticatedUser user){
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(user.getToken());
@@ -65,14 +66,15 @@ public class TransferService {
             myTransferHistory = response.getBody();
 
         }catch (RestClientResponseException | ResourceAccessException e){
-            //BasicLogger.log(e.getMessage());
+//            BasicLogger.log(e.getMessage());
             System.out.println(e.getMessage());
         }
 
     }
 
+    //updates list of Transfers,
+    //Transfers are sorted into 4 String builders and are neatly formatted in the process
     public String getMyTransferHistoryAsFormattedString(AuthenticatedUser user){
-        //get most recent list of transfers by user id
         setListOfTransfers(user);
         try{
             if(myTransferHistory.isEmpty())
@@ -168,15 +170,20 @@ public class TransferService {
         return sbTransfersSent.toString();
     }
 
+    //gets a transfer from my transfers and performs various checks
+    //first checks for null, type,  status, account from, then checks balance if approve
+    // sets transfer status to boolean approve
+    // uses postTransfer which will attempt writing to the server
+    // returns String
     public String approveOrDenyTransfer(AuthenticatedUser user, int transferId, boolean approve ){
         Transfer t = getTransferFromMyTransfersUsingTransferID(user, transferId);
         if(t==null){
             return "Transfer: "+ transferId+" Not Found";
         }
-        else if(t.getTransferType().getTransferTypeId()==2){
+        else if(t.getTransferType().getTransferTypeId()==2){ //TYPE has to be REQUEST
             return "Transfer: " +t.getTransferId()+" Is Not A Request Transfer";
         }
-        else if(t.getTransferStatus().getTransferStatusId()!=1){
+        else if(t.getTransferStatus().getTransferStatusId()!=1){ //Status has to be pending
             return "Transfer: "+t.getTransferId()+ " Is Not Pending";
         }
         else if(t.getAccountFrom().getAccountId()!=accountService.getMyAccount(user).getAccountId()){
@@ -184,18 +191,19 @@ public class TransferService {
         }
         else {
             if (approve){
-                if((accountService.getMyBalance(user)-t.getAmount())<0){
+                if((accountService.getMyBalance(user)-t.getAmount())<0)
                     return "Not Enough Funds To Approve";
-                }
                 t.setTransferStatus(new TransferStatus(2)); //2= approve
             }
-            else if(!approve){
+            else {
                 t.setTransferStatus(new TransferStatus(3)); //3 = DENIED
             }
             return postTransfer(user,t).toString();
         }
    }
 
+   //get a transfer from MyTransfers and returns formatted and more detailed view.
+    //uses helper method getTransferFromMyTransfersUsingTransferID to return a single transfer
     public String getTransferDetails(AuthenticatedUser user, int transferId){
             Transfer t = getTransferFromMyTransfersUsingTransferID(user, transferId);
             if (t == null) {
@@ -220,6 +228,9 @@ public class TransferService {
             }
         }
 
+    //returns a single transfer from list of MyTransfers
+    //updates list everytime
+    //returns null if transfer doesn't exist
     private Transfer getTransferFromMyTransfersUsingTransferID (AuthenticatedUser user,int id){
         try{
             setListOfTransfers(user);

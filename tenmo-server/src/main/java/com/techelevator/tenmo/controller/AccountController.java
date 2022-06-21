@@ -27,6 +27,9 @@ public class AccountController {
     @Autowired
     private UserDao userDao;
 
+    //endpoint for MyAccount
+    //Uses account repo to return the account where principal name is = to account username
+    //returns principal users account
     @GetMapping("/MyAccount")
     public ResponseEntity<Account> getAccount(Principal principal){
         try {
@@ -40,6 +43,7 @@ public class AccountController {
         }
     }
 
+    //returns my balance again using principal
     @GetMapping("/MyBalance")
     public ResponseEntity<Long> getMyBalance(Principal principal){
         try {
@@ -55,6 +59,9 @@ public class AccountController {
 
     }
 
+    //accepts a URL parameter for UserID
+    //returns corresponding account using account repo
+    //note: does not include balance
     @GetMapping("/Account")  //"/AccountId?userId=1002
     public ResponseEntity<Account> getAccountFromUserId(@RequestParam int userId){
         try {
@@ -66,7 +73,6 @@ public class AccountController {
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-//        return accountRepository.findAccountByUserId(userId);
     }
 
 }

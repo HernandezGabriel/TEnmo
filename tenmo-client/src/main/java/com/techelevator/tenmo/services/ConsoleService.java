@@ -69,6 +69,7 @@ public class ConsoleService {
             }
         }
     }
+
     public boolean promptForBoolean(String prompt) {
         System.out.print(prompt);
         try {
@@ -98,6 +99,7 @@ public class ConsoleService {
             }
         }
     }
+
     public Long promptForLong(String prompt) {
         System.out.print(prompt);
         while (true) {
@@ -108,7 +110,6 @@ public class ConsoleService {
             }
         }
     }
-
 
     public void pause() {
         System.out.println("\nPress Enter to continue...");

@@ -3,6 +3,8 @@ package com.techelevator.tenmo;
 import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.*;
 
+
+
 public class App {
 
     private static final String API_BASE_URL = "http://localhost:8080/";
@@ -46,7 +48,7 @@ public class App {
             }
         }
     }
-    //modified with try catch
+
     private void handleRegister() {
         try{
             System.out.println("Please register a new user account");
@@ -81,19 +83,19 @@ public class App {
         while (menuSelection != 0) {
             consoleService.printMainMenu();
             menuSelection = consoleService.promptForMenuSelection("Please choose an option: ");
-            if (menuSelection == 1) {
+            if (menuSelection == 1) { //view balance
                 viewCurrentBalance();
-            } else if (menuSelection == 2) {
+            } else if (menuSelection == 2) { //View Detailed Transfer & View History
                 viewTransferHistory();
                 viewDetailedTransfer();
-            } else if (menuSelection == 3) {
-                viewPendingRequests();
+            } else if (menuSelection == 3) { //View History, approve or dny transfer
+                viewTransferHistory();
                 approveOrDenyTransfer();
                 viewCurrentBalance();
-            } else if (menuSelection == 4) {
+            } else if (menuSelection == 4) {//send bucks
                 sendBucks();
                 viewCurrentBalance();
-            } else if (menuSelection == 5) {
+            } else if (menuSelection == 5) {//request bucks
                 requestBucks();
             } else if (menuSelection == 0) {
                 continue;
@@ -104,20 +106,23 @@ public class App {
         }
     }
 
+    //Uses getMyBalance from account service to display an updated balance to the user
     private void viewCurrentBalance() {
         System.out.println("Your Current Balance is : " + accountService.getMyBalance(currentUser));
     }
 
+    //Uses transferService to Display a formatted string of transfers from & to the user,
+    // followed up by either viewDetailedTransfer() or ApproveOrDenyTransfer() in the main menu
     private void viewTransferHistory() {
         System.out.println(transferService.getMyTransferHistoryAsFormattedString(currentUser));
-        //viewDetailedTransfer();
     }
 
+    //Prompts the user to select an id from their list of transfers,
+    //Displays a detailed view of a single transfer using transferService class
     private void viewDetailedTransfer(){
         try {
-
-            int selection = consoleService.promptForInt("Enter a Transfer Id from the list above to view details or select 0 to continue");
-            if (selection==0){return;}
+            int selection = consoleService.promptForInt("Enter a Transfer Id from the list above to view details\nor select 0 to continue");
+            if (selection==0){  return;}
             else{
                 System.out.println(transferService.getTransferDetails(currentUser, selection));
             }
@@ -126,15 +131,13 @@ public class App {
         }
     }
 
-	private void viewPendingRequests() {
-        viewTransferHistory();
-        //approveOrDenyTransfer();
-    }
-
+    // Prompts the user to select an id from list of requests
+    // and prompts the user for a boolean
+    // then uses transferService to handle the rest of the logic and validation.
     private void approveOrDenyTransfer(){
         try {
             int selection = consoleService.promptForInt("To APPROVE OR DENY, enter a an ID from REQUESTS RECEIVED\nOr enter 0 to continue");
-            if (selection==0){return;}
+            if (selection==0){  return;}
             else{
                 boolean TorF = consoleService.promptForBoolean("Please enter either True [Approve] or False [Deny]");
                 System.out.println("\n"+transferService.approveOrDenyTransfer(currentUser,selection,TorF)+"\n");
@@ -145,12 +148,15 @@ public class App {
         }
     }
 
+    // display list of users using UserService
+    // prompts user to select a user ID to send money to using getValidUserId()
+    // prompts user to enter an amount using getValidAmount()
+    // Uses account service to get toAccount and fromAccount
+    // creates corresponding transferStatus and Transfer type objects.
+    // finally, creates a new Transfer and uses transferService to postTransfer()
     private void sendBucks() {
-
-        // display list of users
         System.out.println(userService.getListOfUsersAsString(currentUser));
 
-        //prompt for user input
         int selectedUserId = getValidUserId();
         long selectedAmount = getValidAmount();
 
@@ -164,7 +170,10 @@ public class App {
         System.out.println("\n"+transferService.postTransfer(currentUser,newTransfer)+"\n");
 
     }
-    //checks id isn't users own and id exists for send bucks
+
+    //Uses ConsoleService to prompt for an ID/integer from the user
+    //checks that ID isn't the same as current user
+    //uses UserService to check ID exist in the DB
     private int getValidUserId(){
         //set to false if selection invalid
         boolean validSelection;
@@ -172,12 +181,12 @@ public class App {
         do {
             validSelection=true; //t by default
             accountSelection = consoleService.promptForInt("Please enter a user ID from the list above: ");
-            //id isnt their own
+
             if(currentUser.getUser().getUserId()==((long)(accountSelection))){
                 System.out.println("ID can't be your own");
                 validSelection=false;
             }
-            //check id exists
+
             if(!userService.idExists(accountSelection)){
                 System.out.println("ID doesn't exist");
                 validSelection=false;
@@ -186,7 +195,9 @@ public class App {
         System.out.println("You Selected: "+ accountSelection + " | "+ userService.getUsernameById(accountSelection));
         return accountSelection;
     }
-    //checks amount is greater than 0 and sufficient funds
+
+    //Prompts user for an amount greater than 0 using console service
+    //then checks users balance for enoughFunds using AccountService
     private long getValidAmount(){
         boolean validSelection;
         long amount=0L;
@@ -196,9 +207,7 @@ public class App {
             if(amount<=0){
                 validSelection=false;
                 System.out.println("Amount cannot be 0 or negative");
-
             }
-           //check for enough funds
             if(validSelection==true){
                 if(!accountService.hasEnoughFunds(amount, currentUser)){
                     validSelection=false;
@@ -210,12 +219,13 @@ public class App {
         return amount;
     }
 
+    // display list of users using userService
+    // Uses account service to get toAccount and fromAccount
+    // creates corresponding transferStatus and Transfer type objects.
+    // finally, creates a new Transfer and uses transferService to postTransfer()
     private void requestBucks() {
-        //display users
         System.out.println(userService.getListOfUsersAsString(currentUser));
-        //get user id
         int selectedUserId = getValidUserId();
-        //valid amount
         boolean validSelection;
         long amount=0L;
         do{
@@ -235,8 +245,6 @@ public class App {
                                 accountService.findAccountFromUserId(selectedUserId, currentUser),
                                 accountService.getMyAccount(currentUser),
                                 amount)) +"\n" ) ;
-
-        // TODO Auto-generated method stub
 
     }
 
