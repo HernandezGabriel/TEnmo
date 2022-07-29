@@ -1,5 +1,12 @@
 # Module 2 Capstone - TEnmo
 
+To Preview The Application/Get Started:
+   Create a new Postgres database called tenmo. Run the database/tenmo.sql script in pgAdmin to set up the database.
+   Run TenmoApplication.java in tenmo-server directory to start the server then Run App.java in tenmo-client directory to start the     application
+
+
+ORIGINAL README:
+
 Congratulations—you've landed a job with TEnmo, whose product is an online payment service for transferring "TE bucks" between friends. However, they don't have a product yet. You've been tasked with writing a RESTful API server and command-line application.
 
 ## Use cases
